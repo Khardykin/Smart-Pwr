@@ -1,0 +1,8 @@
+eeprom.c:27:6:EEPROM_WaitEOP	0	static
+eeprom.c:48:6:writeWordToEEPROM	8	static
+eeprom.c:60:6:write_mem_to_eeprom	24	static
+eeprom.c:72:6:eeprom_config_write_bank	16	static,ignoring_inline_asm
+eeprom.c:91:6:eeprom_config_write	8	static
+eeprom.c:185:6:factory_config_write	8	static
+eeprom.c:195:6:factory_config_read	224	static
+eeprom.c:106:6:read_config_from_eeprom	456	static

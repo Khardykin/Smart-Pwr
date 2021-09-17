@@ -1,0 +1,8 @@
+ADC1115.c:128:13:TimeOut_Set	8	static
+ADC1115.c:139:13:TimeOutRead	0	static
+ADC1115.c:32:13:I2C_ByteSend	8	static
+ADC1115.c:43:6:ADS_WRITE_REG	8	static
+ADC1115.c:61:9:ADS_READ_REG	16	static
+ADC1115.c:95:6:ADS_write_reg	0	static
+ADC1115.c:107:6:ADS_Init	0	static
+ADC1115.c:113:6:ADS_Set_Mode	0	static

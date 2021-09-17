@@ -1,0 +1,13 @@
+modbus.c:61:10:mb_crc	12	static
+modbus.c:487:6:modbusSet	0	static
+modbus.c:509:6:__CMD_PUT_WORD	0	static
+modbus.c:529:10:CmdFunc3	8	static
+modbus.c:592:10:CmdFunc4	8	static
+modbus.c:653:6:__CMD_SAVE_WORD	0	static
+modbus.c:679:6:check_block	16	static
+modbus.c:729:6:modbusCMD	16	static
+modbus.c:782:10:CmdFunc6	16	static
+modbus.c:877:10:CmdFunc8	8	static
+modbus.c:884:10:CmdFunc16	24	static
+modbus.c:426:10:cmdModbusRTU	16	static
+modbus.c:28:6:mb_proc	16	static

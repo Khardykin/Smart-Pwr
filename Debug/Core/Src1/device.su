@@ -1,0 +1,9 @@
+device.c:38:6:timer_1_128	0	static
+device.c:86:6:serviceTimerStart	0	static
+device.c:90:6:serviceTimerStop	8	static
+device.c:74:6:serviceTimerProc	8	static
+device.c:118:6:dev_set_config_default	0	static
+device.c:143:6:dev_init	0	static
+device.c:157:6:dev_proc	8	static
+device.c:185:6:Adc_Eoc_Callback	0	static
+device.c:205:6:Adc_read_data	16	static

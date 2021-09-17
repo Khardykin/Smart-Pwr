@@ -1,0 +1,11 @@
+stm32l0xx_it.c:76:6:NMI_Handler	0	static
+stm32l0xx_it.c:91:6:HardFault_Handler	0	static
+stm32l0xx_it.c:106:6:SVC_Handler	0	static
+stm32l0xx_it.c:119:6:PendSV_Handler	0	static
+stm32l0xx_it.c:132:6:SysTick_Handler	0	static
+stm32l0xx_it.c:153:6:EXTI4_15_IRQHandler	0	static
+stm32l0xx_it.c:174:6:ADC1_COMP_IRQHandler	8	static,ignoring_inline_asm
+stm32l0xx_it.c:213:6:TIM2_IRQHandler	8	static
+stm32l0xx_it.c:233:6:TIM22_IRQHandler	8	static
+stm32l0xx_it.c:261:6:USART2_IRQHandler	8	static
+stm32l0xx_it.c:276:6:LPUART1_IRQHandler	8	static

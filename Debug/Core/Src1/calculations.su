@@ -1,0 +1,5 @@
+calculations.c:17:6:CalibGasZero	0	static
+calculations.c:24:6:CalibGasConc	0	static
+calculations.c:33:10:get_koef_temper_conc	40	static
+calculations.c:154:6:SetGasValue	16	static
+calculations.c:197:6:test_temp_korr	8	static
