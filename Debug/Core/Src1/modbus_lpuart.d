@@ -10,6 +10,7 @@ Core/Src1/modbus_lpuart.o: ../Core/Src1/modbus_lpuart.c \
  ../Drivers/CMSIS/Device/ST/STM32L0xx/Include/system_stm32l0xx.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crc.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h \
+ ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lptim.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lpuart.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_rcc.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crs.h \
@@ -48,6 +49,8 @@ Core/Src1/modbus_lpuart.o: ../Core/Src1/modbus_lpuart.c \
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crc.h:
 
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h:
+
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lptim.h:
 
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lpuart.h:
 

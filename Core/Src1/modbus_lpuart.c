@@ -14,7 +14,9 @@
 #include "modbus_lpuart.h"
 #include "string.h"
 
-///000
+#define MBS_RX_BUF_SIZE 256
+#define MBS_TX_BUF_SIZE 256
+
 uint16_t mbs_rx_cnt;
 uint16_t mbs_rx_pkt_len;
 //uint8_t mbs_buff_rx[MBS_RX_BUF_SIZE];

@@ -32,6 +32,7 @@ extern "C" {
 #include "stm32l0xx_ll_adc.h"
 #include "stm32l0xx_ll_crc.h"
 #include "stm32l0xx_ll_i2c.h"
+#include "stm32l0xx_ll_lptim.h"
 #include "stm32l0xx_ll_lpuart.h"
 #include "stm32l0xx_ll_rcc.h"
 #include "stm32l0xx_ll_crs.h"
@@ -78,6 +79,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define TURN_ON_IR_Pin LL_GPIO_PIN_3
+#define TURN_ON_IR_GPIO_Port GPIOA
 #define RDY_ADS1115_Pin LL_GPIO_PIN_4
 #define RDY_ADS1115_GPIO_Port GPIOA
 #define RDY_ADS1115_EXTI_IRQn EXTI4_15_IRQn

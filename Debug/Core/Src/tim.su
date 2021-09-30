@@ -1,2 +1,2 @@
-tim.c:28:6:MX_TIM2_Init	32	static
-tim.c:62:6:MX_TIM22_Init	64	static
+tim.c:28:6:MX_TIM21_Init	40	static,ignoring_inline_asm
+tim.c:66:6:MX_TIM22_Init	64	static

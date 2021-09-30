@@ -1,10 +1,10 @@
-lmp91000.c:189:13:TimeOut_Set	8	static
-lmp91000.c:200:13:TimeOutRead	0	static
-lmp91000.c:42:13:I2C_ByteSend	8	static
-lmp91000.c:53:6:LMP_WRITE_REG	8	static
-lmp91000.c:71:9:LMP_READ_REG	16	static
 lmp91000.c:106:6:LMP_MemSet	0	static
-lmp91000.c:133:6:LMP_write_reg	8	static
 lmp91000.c:147:6:lmp_proc	8	static
-lmp91000.c:153:6:LMP_Init	8	static
+lmp91000.c:189:6:TimeOut_Set	8	static
+lmp91000.c:200:6:TimeOutRead	8	static
+lmp91000.c:42:6:I2C_ByteSend	8	static
+lmp91000.c:53:6:LMP_WRITE_REG	8	static
+lmp91000.c:133:6:LMP_write_reg	8	static
 lmp91000.c:174:6:LMP_Set_Mode	8	static
+lmp91000.c:71:9:LMP_READ_REG	16	static
+lmp91000.c:153:6:LMP_Init	8	static

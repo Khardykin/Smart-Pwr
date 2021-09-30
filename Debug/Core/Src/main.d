@@ -9,6 +9,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/CMSIS/Device/ST/STM32L0xx/Include/system_stm32l0xx.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crc.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h \
+ ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lptim.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lpuart.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_rcc.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crs.h \
@@ -23,7 +24,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_usart.h \
  ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_gpio.h \
  ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/crc.h ../Core/Inc/i2c.h \
- ../Core/Inc/usart.h ../Core/Inc/tim.h ../Core/Inc/gpio.h \
+ ../Core/Inc/lptim.h ../Core/Inc/usart.h ../Core/Inc/tim.h \
+ ../Core/Inc/gpio.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/defines.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/debug.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/lmp91000.h \
@@ -31,7 +33,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/device.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/modbus_lpuart.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/modbus.h \
+ D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/Mipex_command.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/eeprom.h \
+ D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/flash.h \
+ D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/arhiv.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/calculations.h
 
 ../Core/Inc/main.h:
@@ -55,6 +60,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_crc.h:
 
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_i2c.h:
+
+../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lptim.h:
 
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_lpuart.h:
 
@@ -90,6 +97,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 
 ../Core/Inc/i2c.h:
 
+../Core/Inc/lptim.h:
+
 ../Core/Inc/usart.h:
 
 ../Core/Inc/tim.h:
@@ -110,6 +119,12 @@ D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/modbus_lpuart.h:
 
 D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/modbus.h:
 
+D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/Mipex_command.h:
+
 D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/eeprom.h:
+
+D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/flash.h:
+
+D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/arhiv.h:
 
 D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/calculations.h:

@@ -64,7 +64,7 @@ enum
 extern uint16_t AccessCode;
 extern BOOL mbUnlock;
 extern BOOL mbServiceMode;
-extern uint16_t mbDevStatus;
+extern uint16_t mbHoldDevStatus;
 
 
 #endif /* INC1_MODBUS_H_ */

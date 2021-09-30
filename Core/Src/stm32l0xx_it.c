@@ -27,7 +27,9 @@
 #include "debug.h"
 #include "device.h"
 #include "modbus_lpuart.h"
-
+///000
+#include "msi.h"
+#include "Mipex_command.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -208,23 +210,35 @@ void ADC1_COMP_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles TIM2 global interrupt.
+  * @brief This function handles LPTIM1 global interrupt / LPTIM1 wake-up interrupt through EXTI line 29.
   */
-void TIM2_IRQHandler(void)
+void LPTIM1_IRQHandler(void)
 {
-  /* USER CODE BEGIN TIM2_IRQn 0 */
+  /* USER CODE BEGIN LPTIM1_IRQn 0 */
 
-	if(LL_TIM_IsActiveFlag_UPDATE(TIM2) == 1)
-	{
-		LL_TIM_ClearFlag_UPDATE(TIM2);
+  /* USER CODE END LPTIM1_IRQn 0 */
+  /* USER CODE BEGIN LPTIM1_IRQn 1 */
+	if(LL_LPTIM_IsActiveFlag_ARRM(LPTIM1)){
+		LL_LPTIM_ClearFLAG_ARRM(LPTIM1);
 	}
 
 	timer_1_128();
+  /* USER CODE END LPTIM1_IRQn 1 */
+}
 
-  /* USER CODE END TIM2_IRQn 0 */
-  /* USER CODE BEGIN TIM2_IRQn 1 */
+/**
+  * @brief This function handles TIM21 global interrupt.
+  */
+void TIM21_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM21_IRQn 0 */
 
-  /* USER CODE END TIM2_IRQn 1 */
+  /* USER CODE END TIM21_IRQn 0 */
+  /* USER CODE BEGIN TIM21_IRQn 1 */
+#ifdef CONFIG_MIPEX
+	MSI_Callback_Capture_Timer();
+#endif
+  /* USER CODE END TIM21_IRQn 1 */
 }
 
 /**
@@ -261,9 +275,10 @@ void TIM22_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-
 	Debug_UART_IRQHandler();
-
+#ifdef CONFIG_MIPEX
+	Mipex_UART_IRQHandler();
+#endif
   /* USER CODE END USART2_IRQn 0 */
   /* USER CODE BEGIN USART2_IRQn 1 */
 

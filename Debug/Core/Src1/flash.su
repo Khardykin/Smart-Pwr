@@ -1,0 +1,8 @@
+flash.c:30:6:FLASH_UNLOCK	0	static,ignoring_inline_asm
+flash.c:62:6:FLASH_LOCK	0	static
+flash.c:72:6:FlashWaitNoBSY	0	static
+flash.c:99:6:FlashWaitEOP	0	static
+flash.c:127:6:FlashPageErase	16	static
+flash.c:153:6:FlashProgram	16	static
+flash.c:190:6:ArhivStoreNote	24	static
+flash.c:229:6:ArhivFindLastNote	12	static

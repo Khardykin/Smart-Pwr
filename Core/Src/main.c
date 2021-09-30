@@ -15,6 +15,7 @@
 #include "adc.h"
 #include "crc.h"
 #include "i2c.h"
+#include "lptim.h"
 #include "usart.h"
 #include "tim.h"
 #include "gpio.h"
@@ -30,7 +31,10 @@
 #include "device.h"
 #include "modbus_lpuart.h"
 #include "modbus.h"
+#include "Mipex_command.h"
 #include "eeprom.h"
+#include "flash.h"
+#include "arhiv.h"				  
 #include "calculations.h"
 
 /* USER CODE END Includes */
@@ -127,9 +131,10 @@ int main(void)
   MX_I2C1_Init();
   MX_LPUART1_UART_Init();
   MX_USART2_UART_Init();
-  MX_TIM2_Init();
   MX_TIM22_Init();
   MX_CRC_Init();
+  MX_TIM21_Init();
+  MX_LPTIM1_Init();
   /* USER CODE BEGIN 2 */
 
 	debug_init();
@@ -147,7 +152,8 @@ int main(void)
 	read_config_from_eeprom();
 	dev_init();
 
-	d_printf("\n\rSN %09lu", stMain.Serial);
+	d_printf("\n\rSN %09lu", dev.Config.Serial);
+	d_printf("\n\r");
 	//  test_temp_korr();
 
 	modbus_init();
@@ -158,24 +164,31 @@ int main(void)
 #endif
 	///000
 #ifdef CONFIG_IR
-	ADS_Init(dev.Config.LMP_Gain);
+	ADS_Init(dev.Config.FID);
 #endif
 	LL_ADC_Enable(ADC1);
 	LL_ADC_EnableIT_EOC(ADC1);
 
-	LL_TIM_EnableIT_UPDATE(TIM2);
-	LL_TIM_EnableCounter(TIM2);
 	LL_TIM_EnableIT_CC1(TIM22);
+
+	LL_LPTIM_Enable(LPTIM1);
+	// От LSE 32.768 (прескалер 128) с делением на 2
+	LL_LPTIM_SetAutoReload(LPTIM1, 1);
+	LL_LPTIM_EnableIT_ARRM(LPTIM1);
+	LL_LPTIM_StartCounter(LPTIM1, LL_LPTIM_OPERATING_MODE_CONTINUOUS);
 
 	HourTimer = CntSec;
 
+	///000
+#ifdef CONFIG_MIPEX
+	Mipex_Init();
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-
 		mb_proc();
 
 		if(f_Time500ms){
@@ -207,21 +220,26 @@ int main(void)
 		if(f_AdcCycleEnd){
 
 			f_AdcCycleEnd = FALSE;
+#ifdef CONFIG_EC
+			if(!f_AdcDataBad)
+				Adc_read_data();
+			f_AdcDataBad = FALSE;
+#else
 			Adc_read_data();
-#ifdef CONFIG_IR
-			// Выключаем питание на сенсоре
 #endif
 		}
 
-		if((uint32_t)(CntSec - HourTimer) >= SEC_PER_HOUR){
+		if((uint32_t)(CntSec - HourTimer) >= SEC_PER_MHOUR){
 
 			HourTimer = CntSec;
 
-			//arh.MHour++;
+			arh.MHour++;
 
-			d_printf("\n\rHour Tick");
+			if((arh.MHour % 24) == 0){
+				DayArhivStore();
+			}
 
-			//HourArhivStore();
+
 		}
 
 
@@ -243,14 +261,6 @@ void SystemClock_Config(void)
   {
   }
   LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
-  LL_RCC_HSI_Enable();
-
-   /* Wait till HSI is ready */
-  while(LL_RCC_HSI_IsReady() != 1)
-  {
-
-  }
-  LL_RCC_HSI_SetCalibTrimming(16);
   LL_RCC_MSI_Enable();
 
    /* Wait till MSI is ready */
@@ -258,7 +268,7 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_3);
+  LL_RCC_MSI_SetRange(LL_RCC_MSIRANGE_5);
   LL_RCC_MSI_SetCalibTrimming(0);
   LL_PWR_EnableBkUpAccess();
   LL_RCC_LSE_SetDriveCapability(LL_RCC_LSEDRIVE_LOW);
@@ -280,12 +290,13 @@ void SystemClock_Config(void)
 
   }
 
-  LL_Init1msTick(524288);
+  LL_Init1msTick(2097000);
 
-  LL_SetSystemCoreClock(524288);
-  LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_HSI);
+  LL_SetSystemCoreClock(2097000);
+  LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_PCLK1);
   LL_RCC_SetLPUARTClockSource(LL_RCC_LPUART1_CLKSOURCE_LSE);
   LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_PCLK1);
+  LL_RCC_SetLPTIMClockSource(LL_RCC_LPTIM1_CLKSOURCE_LSE);
 }
 
 /* USER CODE BEGIN 4 */

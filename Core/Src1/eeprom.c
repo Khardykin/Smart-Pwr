@@ -4,7 +4,7 @@
 //
 //
 //	eeprom.c
-//                                                   				  03.09.2021
+//                                                   				  17.09.2021
 //
 //==============================================================================
 
@@ -14,6 +14,8 @@
 #include "crc.h"
 #include "device.h"
 #include "debug.h"
+#include "arhiv.h"
+#include "flash.h"
 
 uint8_t nConfigBank = 0;
 
@@ -92,10 +94,14 @@ void eeprom_config_write(void) {
 
 	dev.Config.Counter++;
 
+	d_printf("\n\r");
 	eeprom_config_write_bank(nConfigBank);
+	d_printf("Config write");
+
+	f_AdcDataBad = TRUE;
 
 	nConfigBank ^= 1;
-	d_printf("\n\rConfig write");
+
 
 }
 
@@ -154,6 +160,7 @@ void read_config_from_eeprom(void){
 
 			dev_set_config_default();
 			d_printf("\n\r%SetDef",0);
+
 			// Выбор первого банка
 			nConfigBank = 0;
 
@@ -161,6 +168,9 @@ void read_config_from_eeprom(void){
 			eeprom_config_write();
 
 			nConfigBank = 0;
+
+			ArhivStoreNote(ARCHIVE_SET_CONFIG_DEFAULT, 0);
+
 		}
 
 	}
@@ -172,6 +182,7 @@ void read_config_from_eeprom(void){
 
 			((uint32_t*) &dev.Config)[i] = ((uint32_t*)&ConfigTmp[nConfigBank])[i];
 		}
+
 		d_printf("\n\rConfigBank-%d, CNT-%d", nConfigBank, dev.Config.Counter);
 	}
 
@@ -185,6 +196,7 @@ void read_config_from_eeprom(void){
 void factory_config_write(void){
 
 	eeprom_config_write_bank(2);
+
 	d_printf("\n\rFactory config write");
 
 }
@@ -211,7 +223,9 @@ BOOL factory_config_read(void){
 	crc = CalcCRC((uint32_t*)&ConfigTmp, (EEPROM_CONFIG_LEN/4)-1);
 
 	if( ConfigTmp.crc != crc){
+
 		d_printf("\n\rNo Data Factory",0);
+
 		return FALSE;
 
 	}

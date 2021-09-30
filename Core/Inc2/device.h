@@ -12,7 +12,8 @@
 #include "defines.h"
 ///000
 //#define CONFIG_EC		// Конфигурация для электрохимии
-#define CONFIG_IR  		// Конфигурация для термокаталики
+//#define CONFIG_IR		// Конфигурация для термокатализа
+#define CONFIG_MIPEX	// Конфигурация для MIPIX
 
 
 void timer_1_128(void);
@@ -23,13 +24,20 @@ void dev_proc(void);
 extern BOOL f_Time250ms;
 extern BOOL f_Time500ms;
 ///000
+#ifdef CONFIG_MIPEX
+	extern BOOL f_Time3s;
+#endif
+///000
 extern BOOL f_Time2min;
-extern BOOL f_TimeCalibFid;
+#ifdef CONFIG_IR
+	extern BOOL f_TimeCalibFid;
+#endif
+
 extern int32_t CntSec;
 extern int32_t HourTimer;
 
 #define SERVICE_TIME_MODBUS (120*2+1)
-#define SEC_PER_HOUR (60*60)
+#define SEC_PER_MHOUR (60*60)
 
 void serviceTimerStart(uint16_t );
 
@@ -43,6 +51,7 @@ extern uint8_t adc_cnt;
 
 extern BOOL lmp_tia_or_temper;
 extern BOOL f_AdcCycleEnd;
+extern BOOL f_AdcDataBad;
 
 typedef struct{
 
@@ -77,6 +86,8 @@ typedef struct{
 	uint16_t MolarMass; 		/* Молярная масса газа					*/
 	uint16_t ValueHighMeausure;	/* Верхнее значение: измеряемое			*/
 
+
+
 	struct{
 		int16_t Temp;
 		uint16_t Koef;
@@ -98,7 +109,8 @@ typedef struct{
 	uint16_t CalibConcTemper;
 	uint16_t CalibConcADC;
 
-	uint16_t Reserv[2];
+	uint32_t Serial;
+
 	uint32_t crc;
 
 }Config_td;
@@ -134,6 +146,9 @@ typedef struct{
 
 	uint16_t Value_0;			/* 0x001C */	/* Текущая концентрация газа до температурной коррекции */
 	uint16_t ADC_0;				/* 0x001F */	/* Значение АЦП до температурной коррекции				*/
+	uint16_t ADC_TK;			/* 0x0020 */	/* Значение АЦП после температурной коррекции			*/
+	uint16_t TK_Mul;			/* 0x0021 */	/* Коэфициент при температурной коррекции (множитель)	*/
+	uint16_t TK_Add;			/* 0x0022 */	/* Коэфициент при температурной коррекции (смещение)	*/
 
 }RegInput_td;
 
@@ -143,6 +158,8 @@ typedef struct {
 	RegInput_td RegInput;
 
 	uint16_t Status;
+
+	BOOL f_heat;
 
 }dev_td;
 
@@ -157,7 +174,7 @@ typedef struct{
 
 }stMain_td;
 
-extern stMain_td stMain;
+//extern stMain_td stMain;
 
 void dev_set_config_default(void);
 

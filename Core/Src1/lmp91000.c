@@ -32,14 +32,14 @@
 
 //==============================================================================
 
-static void TimeOut_Set(uint32_t);
-static BOOL TimeOutRead(void);
+void TimeOut_Set(uint32_t);
+BOOL TimeOutRead(void);
 
 //==============================================================================
 
 #define I2C_TO 1
 
-static void I2C_ByteSend(uint8_t data){
+void I2C_ByteSend(uint8_t data){
 
 	TimeOut_Set(I2C_TO);
 	while(!TimeOutRead() && !LL_I2C_IsActiveFlag_TXIS(LMP_PORT));
@@ -94,9 +94,9 @@ uint8_t LMP_READ_REG(uint8_t reg){
 
 //==============================================================================
 
-static uint8_t LMP_Tia;
-static uint8_t LMP_Ref;
-static uint8_t LMP_Mode;
+uint8_t LMP_Tia;
+uint8_t LMP_Ref;
+uint8_t LMP_Mode;
 
 enum{
 	WITHOUT_MODE = 0,
@@ -151,17 +151,16 @@ void lmp_proc(void){
 }
 
 void LMP_Init(void){
-	uint8_t dat = 0;
+
+	uint8_t dat;
+
 	dat = LMP_READ_REG(LMP_STATUS_REG);
-
 	d_printf("\n\rLMP STAT:0x%02X", dat);
-
 
 	LMP_MemSet();
 	LMP_write_reg();
 
 	dat = LMP_READ_REG(LMP_TIACN_REG);
-
 	d_printf(" TIA:0x%02X", dat);
 
 	dat = LMP_READ_REG(LMP_REFCN_REG);
@@ -169,6 +168,7 @@ void LMP_Init(void){
 
 	dat = LMP_READ_REG(LMP_MODECN_REG);
 	d_printf(" MODE:0x%02X ", dat);
+
 }
 
 void LMP_Set_Mode(uint8_t reg){
@@ -182,11 +182,11 @@ void LMP_Set_Mode(uint8_t reg){
 
 //==============================================================================
 
-static uint32_t TimeOutDelay;
+uint32_t TimeOutDelay;
 
-static uint32_t TimeOutCnt;
+uint32_t TimeOutCnt;
 
-static void TimeOut_Set(uint32_t timeOut){
+void TimeOut_Set(uint32_t timeOut){
 
 	__IO uint32_t  tmp;
 	tmp = SysTick->CTRL;
@@ -197,7 +197,7 @@ static void TimeOut_Set(uint32_t timeOut){
 
 }
 
-static BOOL TimeOutRead(void){
+BOOL TimeOutRead(void){
 
 	if((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) != 0U)
 	{
@@ -209,6 +209,7 @@ static BOOL TimeOutRead(void){
 	}
 
 	TimeOutCnt++;
+	d_printf("\n\rI2C TOut - %d", TimeOutCnt);
 
 	return TRUE;
 }
