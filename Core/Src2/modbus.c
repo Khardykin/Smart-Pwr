@@ -52,9 +52,12 @@ void mb_proc(void){
 		LL_USART_DisableDirectionRx(MBS_LPUART);
 		LL_USART_EnableIT_TXE(MBS_LPUART);
 
-
 	}
-
+#ifdef CONFIG_MIPEX
+	else{
+		Mipex_transmit_commmand_repeat((char*)mbs_pkt_rx, mbs_rx_pkt_len);
+	}
+#endif
 
 }
 
@@ -778,7 +781,7 @@ void modbusCMD(void){
 
 		break;
 		///000
-#ifdef CONFIG_IR
+#ifdef CONFIG_FID
 	case DEF_CODE_CALIB_FID:
 		// Режим непрерывной работы для ФИД во время калибровки включить
 		f_TimeCalibFid = TRUE;
@@ -795,7 +798,8 @@ void modbusCMD(void){
 		///000
 #ifdef CONFIG_MIPEX
 	case DEF_CODE_MODE_INIT_MIPEX:
-		Mipex_Restart();
+		//Mipex_Restart();
+		Mipex_repeater = 0;
 		break;
 	case DEF_CODE_MODE_DIRECT_MIPEX:
 		Mipex_repeater = 1;

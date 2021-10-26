@@ -72,6 +72,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 void printUID(void){
+#ifdef DEBUG_MY
 	uint32_t *idBase = (uint32_t*)(UID_BASE);
 	uint8_t s[4];
 	int i;
@@ -90,7 +91,7 @@ void printUID(void){
 	idBase = (uint32_t*)(UID_BASE + 0x14);
 
 	d_printf("\n\rUID %02X-\"%s\"-\"%s\"-%08lx", (*idBase >> 24) & 0xff, s, s2, *idBase2);
-
+#endif
 }
 
 /* USER CODE END 0 */
@@ -122,7 +123,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -137,10 +138,11 @@ int main(void)
   MX_LPTIM1_Init();
   /* USER CODE BEGIN 2 */
 
-	debug_init();
+#ifdef DEBUG_MY
+  	debug_init();
 	d_printf("\n\r\n\r%s %s", date, time);
-
 	printUID();
+#endif
 
 	//LL_ADC_SetCommonPathInternalCh(__LL_ADC_COMMON_INSTANCE(ADC1), LL_ADC_PATH_INTERNAL_TEMPSENSOR);
 	ADC1_COMMON->CCR |= LL_ADC_PATH_INTERNAL_TEMPSENSOR;
@@ -152,8 +154,11 @@ int main(void)
 	read_config_from_eeprom();
 	dev_init();
 
+#ifdef DEBUG_MY
 	d_printf("\n\rSN %09lu", dev.Config.Serial);
 	d_printf("\n\r");
+#endif
+
 	//  test_temp_korr();
 
 	modbus_init();
@@ -163,7 +168,7 @@ int main(void)
 	LMP_Set_Mode(MODE_TEMPERAT);
 #endif
 	///000
-#ifdef CONFIG_IR
+#if defined(CONFIG_PI) || defined(CONFIG_FID)
 	ADS_Init(dev.Config.FID);
 #endif
 	LL_ADC_Enable(ADC1);
@@ -190,7 +195,10 @@ int main(void)
 	while (1)
 	{
 		mb_proc();
-
+#ifdef CONFIG_PI
+		// Прогрев и включение термокаталики
+		heat_proc();
+#endif
 		if(f_Time500ms){
 
 			f_Time500ms = FALSE;
@@ -207,10 +215,12 @@ int main(void)
 			f_Time250ms = FALSE;
 
 #ifdef DEBUG_ADC_TIME
+#ifdef DEBUG_MY
 			if(!lmp_tia_or_temper)
 				d_printf("\n");
 			else
 				d_printf("\r");
+#endif
 #endif
 
 			LL_ADC_REG_StartConversion(ADC1);

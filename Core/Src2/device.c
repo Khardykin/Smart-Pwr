@@ -38,7 +38,7 @@ BOOL f_Time500ms = FALSE;
 ///000
 uint8_t CntTo2min = 0;
 BOOL f_Time2min = TRUE;
-#ifdef CONFIG_IR
+#if defined(CONFIG_PI) || defined(CONFIG_FID)
 	BOOL f_TimeCalibFid = FALSE;
 #endif
 
@@ -46,11 +46,12 @@ uint8_t CntToSec = 0;
 int32_t CntSec = 0;
 int32_t HourTimer = 0;
 
-uint32_t Cnt_1_128 = 0;
+static uint32_t Cnt_1_128 = 0;
 
 BOOL f_readADC = FALSE;
 
-void timer_1_128(void){
+void timer_1_128(void)
+{
 
 	Cnt_1_128++;
 	///000
@@ -101,7 +102,8 @@ uint16_t serviceTimer;
 
 void serviceTimerStop(void);
 
-void serviceTimerProc(void){
+void serviceTimerProc(void)
+{
 
 	if(serviceTimer > 1){
 		serviceTimer--;
@@ -113,11 +115,13 @@ void serviceTimerProc(void){
 
 }
 
-void serviceTimerStart(uint16_t time){
+void serviceTimerStart(uint16_t time)
+{
 	serviceTimer = time;
 }
 
-void serviceTimerStop(void){
+void serviceTimerStop(void)
+{
 
 	mbServiceMode = FALSE;
 	dev.Status &=~ (1 << STATUS_BIT_MAIN_MODE);
@@ -148,7 +152,8 @@ BOOL f_AdcDataBad;
 
 //==============================================================================
 ///000
-void dev_set_config_default(void){
+void dev_set_config_default(void)
+{
 #ifdef CONFIG_EC
 //	dev.Config.TypeSensor = 0;
 //	dev.Config.Unit = 0;
@@ -169,8 +174,18 @@ void dev_set_config_default(void){
 	dev.Config.LMP_FET		= 0x0700;
 #endif
 
-#ifdef CONFIG_IR
+#ifdef CONFIG_PI
 	dev.Config.TypeSensor = (SENSOR_TYPE_PI << 8);
+	dev.Config.Unit = 0x0200|(1 << CFG_UNIT_VALUE_lel);
+
+	dev.Config.ValueLow = 0;
+	dev.Config.ValueHigh = 10000;
+
+	dev.Config.ScaleKoef = 10;
+	dev.Config.FID = ADS_CONFIG_REG_PGA_1_024V;
+#endif
+#ifdef CONFIG_FID
+	dev.Config.TypeSensor = (SENSOR_TYPE_FID << 8);
 	dev.Config.Unit = 0x0200|(1 << CFG_UNIT_VALUE_lel);
 
 	dev.Config.ValueLow = 0;
@@ -200,6 +215,9 @@ void dev_set_config_default(void){
 #ifdef CONFIG_MIPEX
 	#define INIT_MODE_TIME 60
 #endif
+#if defined(CONFIG_PI) || defined(CONFIG_FID)
+	#define INIT_MODE_TIME 30
+#endif
 
 void dev_init(void){
 
@@ -217,10 +235,11 @@ void dev_init(void){
 
 //==============================================================================
 #ifdef CONFIG_EC
-#define SET_HEAT_ON 	LL_GPIO_SetOutputPin(HEAT_Output_GPIO_Port, HEAT_Output_Pin)
-#define SET_HEAT_OFF 	LL_GPIO_ResetOutputPin(HEAT_Output_GPIO_Port, HEAT_Output_Pin)
+#define SET_HEAT_ON 	LL_GPIO_SetOutputPin(HEAT_GPIO_Output_GPIO_Port, HEAT_GPIO_Output_Pin)
+#define SET_HEAT_OFF 	LL_GPIO_ResetOutputPin(HEAT_GPIO_Output_GPIO_Port, HEAT_GPIO_Output_Pin)
 
-void heat_proc(void){
+void heat_proc(void)
+{
 
 	if(dev.f_heat){
 		if(dev.RegInput.TempSensor > -100){
@@ -247,10 +266,60 @@ void heat_proc(void){
 
 }
 #endif
+#ifdef CONFIG_PI
+#define SET_TURN_ON 	WRITE_REG(TURN_ON_IR_GPIO_Port->BSRR, TURN_ON_IR_Pin);
+#define SET_TURN_OFF 	WRITE_REG(TURN_ON_IR_GPIO_Port->BRR, TURN_ON_IR_Pin);
+#define HEAT_TIME_PERIOD		(100)
+#define HEAT_TIME_PULSE			(1)
+#define HEAT_TIME_DEC_PERIOD	(INIT_MODE_TIME*1000/HEAT_TIME_PERIOD)
+uint8_t flag_1ms;
+static uint16_t CountPeriod = 0;
+static uint16_t Counter = 0;
+static uint16_t CounterDecPeriod = 0;
+static uint8_t flagPulse;
+
+void heat_proc(void)
+{
+	if(dev.Status & (1 << STATUS_BIT_MAIN_INIT)){
+		if(flag_1ms){
+			flag_1ms = 0;
+			if(flagPulse){
+				SET_TURN_ON;
+			}
+			else{
+				SET_TURN_OFF;
+			}
+			Counter++;
+			CounterDecPeriod++;
+			if(CounterDecPeriod >= HEAT_TIME_DEC_PERIOD){
+				if(CountPeriod < HEAT_TIME_PERIOD){
+					CountPeriod++;
+				}
+				CounterDecPeriod = 0;
+			}
+			if(flagPulse){
+				if(Counter >= HEAT_TIME_PULSE){
+					Counter = 0;
+					flagPulse = 0;
+				}
+			}
+			else{
+				if((Counter + CountPeriod) >= HEAT_TIME_PERIOD){
+					Counter = 0;
+					flagPulse = 1;
+				}
+			}
+		}
+	}
+	else{
+		// Включаем питание на сенсоре
+		SET_TURN_ON;
+	}
+}
+#endif
 //==============================================================================
-
-void dev_proc(void){
-
+void dev_proc(void)
+{
 	if(dev.RegInput.TimeToOffHeat != 0)
 		dev.RegInput.TimeToOffHeat = INIT_MODE_TIME - CntSec;
 
@@ -259,6 +328,8 @@ void dev_proc(void){
 		dev.Status &=~ (1 << STATUS_BIT_MAIN_INIT);
 		dev.Status |= (1 << STATUS_BIT_MAIN_RUN);
 		dev.RegInput.TimeToOffHeat = 0;
+		// Выключаем системный таймер
+		SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 	}
 
 	serviceTimerProc();
@@ -266,24 +337,26 @@ void dev_proc(void){
 	mbHoldDevStatus = dev.Status;
 #ifdef CONFIG_EC
 	heat_proc();
-#endif
 	if(!f_readADC)
 		return;
+#endif
 
 
 //#define DEBUG_ADC
 
 #ifdef DEBUG_ADC
+#ifdef DEBUG_MY
 		d_printf("\n\r");
 		d_printf("(%04X %04X) %04X %04X", ADC_in_Temper, ADC_in[0], ADC_in[1], ADC_in[2]);
 		d_printf(" |  (TV:%05d) TIA:%05d V:%05d T_LMP:%02d (T_MPU:%02d)", ADC_in_mVolt_Temper, ADC_in_mVolt_TIA,  ADC_in_RefVoltage, LMP_temper, ADC_in_Celsius);
+#endif
 #endif
 
 }
 
 //==============================================================================
-
-void Adc_Eoc_Callback(void){
+void Adc_Eoc_Callback(void)
+{
 
 	if(LL_ADC_IsActiveFlag_EOS(ADC1)){
 		adc_cnt = 2;
@@ -303,6 +376,7 @@ void Adc_Eoc_Callback(void){
 	}
 
 }
+
 #ifdef CONFIG_EC
 //==============================================================================
 
@@ -318,7 +392,8 @@ BOOL lmp_tia_or_temper;
 ///000
 
 BOOL lmp_tia_or_temper;
-void Adc_read_data(void){
+void Adc_read_data(void)
+{
 
 
 	ADC_in_RefVoltage = __LL_ADC_CALC_VREFANALOG_VOLTAGE(ADC_in[1], LL_ADC_RESOLUTION_12B);
@@ -373,8 +448,9 @@ void Adc_read_data(void){
 }
 #endif
 
-#ifdef CONFIG_IR
-void Adc_read_data(void){
+#ifdef CONFIG_FID
+void Adc_read_data(void)
+{
 	ADC_in_RefVoltage = __LL_ADC_CALC_VREFANALOG_VOLTAGE(ADC_in[1], LL_ADC_RESOLUTION_12B);
 	ADC_in_Celsius = 10 * __LL_ADC_CALC_TEMPERATURE(ADC_in_RefVoltage, ADC_in[2], LL_ADC_RESOLUTION_12B);
 
@@ -390,8 +466,10 @@ void Adc_read_data(void){
 		dev.RegInput.TempSensor = ADC_in_Celsius;
 #define DEBUG_ADS1115
 #ifdef DEBUG_ADS1115
+#ifdef DEBUG_MY
 		d_printf("ADC - %05d Volt - %05d Temp:%d", dev.RegInput.ADC_0, dev.RegInput.Volt_Sens,  dev.RegInput.TempSensor);
 		d_printf("\n\r");
+#endif
 #endif
 		if(!f_TimeCalibFid){
 			// Выключаем питание на сенсоре
@@ -399,18 +477,44 @@ void Adc_read_data(void){
 			dev.Status &=~ (1 << STATUS_BIT_FID_PWR);
 		}
 		SetGasValue();
-//		//--------------------------------------------------------------------
-//		// Единица измерения
-//		if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_lel)){
-//			dev.RegInput.Value = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
-//		}
+		//--------------------------------------------------------------------
+		// Перевод в единицу измерения НКПР
+		if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_vol)){
+			dev.RegInput.dwValue_mg_m3 = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
+		}
 	}
 
 }
 #endif
 
+#ifdef CONFIG_PI
+void Adc_read_data(void)
+{
+	ADC_in_RefVoltage = __LL_ADC_CALC_VREFANALOG_VOLTAGE(ADC_in[1], LL_ADC_RESOLUTION_12B);
+	ADC_in_Celsius = 10 * __LL_ADC_CALC_TEMPERATURE(ADC_in_RefVoltage, ADC_in[2], LL_ADC_RESOLUTION_12B);
+
+	dev.RegInput.ADC_0 = ADS_Read_adc(dev.Config.FID);
+	dev.RegInput.Volt_Sens = ADS_Read_volt(dev.RegInput.ADC_0);
+	dev.RegInput.TempSensor = ADC_in_Celsius;
+//#define DEBUG_ADS1115
+#ifdef DEBUG_ADS1115
+#ifdef DEBUG_MY
+		d_printf("ADC - %05d Volt - %05d Temp:%d", dev.RegInput.ADC_0, dev.RegInput.Volt_Sens,  dev.RegInput.TempSensor);
+		d_printf("\n\r");
+#endif
+#endif
+	SetGasValue();
+	//--------------------------------------------------------------------
+	// Перевод в единицу измерения НКПР
+	if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_vol)){
+		dev.RegInput.dwValue_mg_m3 = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
+	}
+}
+#endif
+
 #ifdef CONFIG_MIPEX
-void Adc_read_data(void){
+void Adc_read_data(void)
+{
 	ADC_in_RefVoltage = __LL_ADC_CALC_VREFANALOG_VOLTAGE(ADC_in[1], LL_ADC_RESOLUTION_12B);
 	ADC_in_Celsius = 10 * __LL_ADC_CALC_TEMPERATURE(ADC_in_RefVoltage, ADC_in[2], LL_ADC_RESOLUTION_12B);
 
@@ -421,19 +525,21 @@ void Adc_read_data(void){
 		MSI_CalibrateFixedError(20000, &MSIFrequencyCalib);
 //#define DEBUG_MSI_Calib
 #ifdef DEBUG_MSI_Calib
+#ifdef DEBUG_MY
 	d_printf("MSIFreqCalib %d", MSIFrequencyCalib);
 	d_printf("\n\r");
+#endif
 #endif
 	}
 	// 3 секунды
 	if(f_Time3s){
 		f_Time3s = FALSE;
 		Mipex_transmit_commmand(COMMAND_DATAE2);
-//		//--------------------------------------------------------------------
-//		// Единица измерения
-//		if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_lel)){
-//			dev.RegInput.Value = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
-//		}
+		//--------------------------------------------------------------------
+		// Перевод в единицу измерения НКПР
+		if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_vol)){
+			dev.RegInput.dwValue_mg_m3 = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
+		}
 //		//--------------------------------------------------------------------
 //		// Дискретность
 //		uint8_t disc = (dev.Config.Unit & 0x03000)>>16;
@@ -454,8 +560,10 @@ void Adc_read_data(void){
 
 //#define DEBUG_ADS1115
 #ifdef DEBUG_ADS1115
+#ifdef DEBUG_MY
 	d_printf("ADC - %05d Volt - %05d Temp:%d", dev.RegInput.ADC_0, dev.RegInput.Volt_Sens,  dev.RegInput.TempSensor);
 	d_printf("\n\r");
+#endif
 #endif
 
 //	SetGasValueMipex();

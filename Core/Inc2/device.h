@@ -12,14 +12,16 @@
 #include "defines.h"
 ///000
 //#define CONFIG_EC		// Конфигурация для электрохимии
-//#define CONFIG_IR		// Конфигурация для термокатализа
-#define CONFIG_MIPEX	// Конфигурация для MIPIX
+#define CONFIG_PI		// Конфигурация для термокатализа
+//#define CONFIG_FID	// Конфигурация для MINIPID
+//#define CONFIG_MIPEX	// Конфигурация для MIPIX
 
 
 void timer_1_128(void);
 
 void dev_init(void);
 void dev_proc(void);
+void heat_proc(void);
 
 extern BOOL f_Time250ms;
 extern BOOL f_Time500ms;
@@ -29,8 +31,12 @@ extern BOOL f_Time500ms;
 #endif
 ///000
 extern BOOL f_Time2min;
-#ifdef CONFIG_IR
+#ifdef CONFIG_FID
 	extern BOOL f_TimeCalibFid;
+#endif
+
+#ifdef CONFIG_PI
+	extern 	uint8_t flag_1ms;
 #endif
 
 extern int32_t CntSec;

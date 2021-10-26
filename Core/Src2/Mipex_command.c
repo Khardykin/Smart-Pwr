@@ -221,6 +221,7 @@ static uint8_t receive_UART(void){
 		if(LL_LPUART_IsActiveFlag_RXNE(MIPEX_UART)){
 			data = LL_LPUART_ReceiveData8(MIPEX_UART);
 			ring_buffer_put(&Mipex_ring_buff_rx, data);
+			TimerRxMipex = TIME_RX_MIPEX;
 		}
 		if(LL_LPUART_IsActiveFlag_ORE(MIPEX_UART)){
 			LL_LPUART_ClearFlag_ORE(MIPEX_UART);
@@ -291,8 +292,6 @@ void Mipex_transmit_commmand(CommandMipexType command){
 //					data *= 10;
 //				}
 //			}
-
-
 			tr_buf[0] = 'C';tr_buf[1] = 'A';tr_buf[2] = 'L';tr_buf[3] = 'B';tr_buf[4] = ' ';
 			for(uint8_t i = 0; i < 4; i++){
 				tr_buf[8 - i] = (data % 10) + 0x30;

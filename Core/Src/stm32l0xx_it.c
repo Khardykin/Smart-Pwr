@@ -51,6 +51,7 @@
 /* USER CODE BEGIN PV */
 ///000
 //extern uint8_t ads_conversion_ready; // Флаг готовности преобразования ADS
+uint32_t count_1ms = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -134,7 +135,10 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+#ifdef CONFIG_PI
+	flag_1ms = 1;
+	count_1ms += 1;
+#endif
   /* USER CODE END SysTick_IRQn 0 */
 
   /* USER CODE BEGIN SysTick_IRQn 1 */

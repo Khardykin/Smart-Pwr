@@ -1,5 +1,5 @@
 #MicroXplorer Configuration settings - do not modify
-ADC.ClockPrescaler=ADC_CLOCK_SYNC_PCLK_DIV2
+ADC.ClockPrescaler=ADC_CLOCK_SYNC_PCLK_DIV1
 ADC.DiscontinuousConvMode=ENABLE
 ADC.EOCSelection=ADC_EOC_SINGLE_CONV
 ADC.IPParameters=Overrun,EOCSelection,OversamplingMode,DiscontinuousConvMode,SamplingTime,ClockPrescaler,ScanConvMode,RightBitShift,Ratio
@@ -140,7 +140,7 @@ ProjectManager.HalAssertFull=false
 ProjectManager.HeapSize=0x200
 ProjectManager.KeepUserCode=true
 ProjectManager.LastFirmware=false
-ProjectManager.LibraryCopy=1
+ProjectManager.LibraryCopy=2
 ProjectManager.MainLocation=Core/Src
 ProjectManager.NoMain=false
 ProjectManager.PreviousToolchain=
