@@ -159,6 +159,7 @@ static ErrorStatus Mipex_parcing_commmand(CommandMipexType command){
 		else if(strcompare((char*)rc_buf, "AZERO", 5)){
 
 		}
+		// DATAE2
 		else if(Mipex_crc(rc_buf, 4) == rc_buf[4]){
 			dev.RegInput.Value = (rc_buf[0]<<8) + rc_buf[1];
 			Mipexstate = (rc_buf[2]<<8) + rc_buf[3];
