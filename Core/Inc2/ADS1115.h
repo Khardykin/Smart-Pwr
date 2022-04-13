@@ -36,6 +36,10 @@
 #define ADS_CONFIG_REG_MUX_DIF_0_3 				(0x1000) // AINP = AIN0 and AINN = AIN3
 #define ADS_CONFIG_REG_MUX_DIF_1_3 				(0x2000) // AINP = AIN1 and AINN = AIN3
 #define ADS_CONFIG_REG_MUX_DIF_2_3 				(0x3000) // AINP = AIN2 and AINN = AIN3
+#define ADS_CONFIG_REG_MUX_DIF_0_N 				(0x0000) // AINP = AIN0 and AINN = GND
+#define ADS_CONFIG_REG_MUX_DIF_1_N 				(0x1000) // AINP = AIN0 and AINN = GND
+#define ADS_CONFIG_REG_MUX_DIF_2_N 				(0x2000) // AINP = AIN1 and AINN = GND
+#define ADS_CONFIG_REG_MUX_DIF_3_N 				(0x3000) // AINP = AIN2 and AINN = GND
 
 #define ADS_CONFIG_REG_MODE_MASK 				(0x0100) // Mask
 #define ADS_CONFIG_REG_MODE_CONTIN 				(0x0000) // Continuous-conversion mode

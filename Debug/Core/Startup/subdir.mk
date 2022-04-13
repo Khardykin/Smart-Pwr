@@ -18,3 +18,10 @@ S_DEPS += \
 Core/Startup/%.o: ../Core/Startup/%.s Core/Startup/subdir.mk
 	arm-none-eabi-gcc -mcpu=cortex-m0plus -g3 -DDEBUG -c -I"D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1" -x assembler-with-cpp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfloat-abi=soft -mthumb -o "$@" "$<"
 
+clean: clean-Core-2f-Startup
+
+clean-Core-2f-Startup:
+	-$(RM) ./Core/Startup/startup_stm32l031g6ux.d ./Core/Startup/startup_stm32l031g6ux.o
+
+.PHONY: clean-Core-2f-Startup
+

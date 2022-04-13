@@ -1,5 +1,5 @@
-debug.c:24:6:debug_init	40	static
-debug.c:36:6:d_printf	200	static
-debug.c:83:6:Debug_TXEmpty_Callback	0	static
+debug.c:24:6:debug_init	40	static,ignoring_inline_asm
+debug.c:36:6:d_printf	200	static,ignoring_inline_asm
+debug.c:83:6:Debug_TXEmpty_Callback	0	static,ignoring_inline_asm
 debug.c:206:6:Debug_RXNEmpty_Callback	0	static
 debug.c:66:6:Debug_UART_IRQHandler	8	static

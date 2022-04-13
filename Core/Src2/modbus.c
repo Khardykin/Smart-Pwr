@@ -40,6 +40,8 @@ void mb_proc(void){
 		d_printf(" %02X", mbs_pkt_rx[i]);
 #endif
 
+	if(mbs_rx_pkt_len < 4)
+		return;
 	uint16_t crc = mb_crc(mbs_pkt_rx,mbs_rx_pkt_len-2);
 
 	if((mbs_pkt_rx[0] == 0x55) && \
@@ -182,7 +184,7 @@ typedef struct
 } TVAR;
 
 #define DEF_REG_ADR_BASE_x03		0x1000
-#define DEF_REG_CNT_x03				0x70
+#define DEF_REG_CNT_x03				0x7A
 
 //==============================================================================
 
@@ -220,7 +222,7 @@ const TVAR reg_x03[] =
 		/* 0x101C */	{ (uint16_t*)&dev.Config.LMP_Gain,			TRUE },		/* Настройки LMP ucRLoad & ucGain		*/
 		/* 0x101D */	{ (uint16_t*)&dev.Config.LMP_BiasSign,		TRUE },		/* Настройки LMP ucBias & ucBiasSign 	*/
 		/* 0x101E */	{ (uint16_t*)&dev.Config.LMP_Source,		TRUE },		/* Настройки LMP ucIntZ & ucSource		*/
-		/* 0x101F */	{ (uint16_t*)&dev.Config.LMP_FET,			TRUE },		/* Настройки LMP  ucMode & ucFET		*/
+		/* 0x101F */	{ (uint16_t*)&dev.Config.LMP_Mode,			TRUE },		/* Настройки LMP  ucMode & ucFET		*/
 		//----------------------------------------------------------------
 		/* 0x1020 */	{ (uint16_t*)&AccessCode,					FALSE },	/* Код действия							*/
 		/* 0x1021 */	{ (uint16_t*)&AccessData,					FALSE },	/* Параметр								*/
@@ -229,10 +231,10 @@ const TVAR reg_x03[] =
 		/* 0x1024 */	{ (uint16_t*)&dev.Config.MolarMass,			TRUE },		/* Молярная масса газа					*/
 		/* 0x1025 */	{ (uint16_t*)&dev.Config.ValueHighMeausure,	TRUE },		/* Верхнее значение: измеряемое			*/
 		/* 0x1026 */	{ (uint16_t*)&dev.Config.VerHW,				TRUE },		/* Версия аппаратной реализации			*/
-		/* 0x1027 */	{ (uint16_t*)&Reserv,						FALSE },		/*		Р Е З Е Р В						*/
-		/* 0x1028 */	{ (uint16_t*)&Reserv,						FALSE },		/*		Р Е З Е Р В						*/
-		/* 0x1029 */	{ (uint16_t*)&Reserv,						FALSE },		/*		Р Е З Е Р В						*/
-		/* 0x102A */	{ (uint16_t*)&Reserv,						FALSE },		/*		Р Е З Е Р В						*/
+		/* 0x1027 */	{ (uint16_t*)&dev.Config.CalibZeroTemper,	TRUE },		/*	Темпер. при калибровке нуля			*/
+		/* 0x1028 */	{ (uint16_t*)&dev.Config.CalibZeroADC,		TRUE },		/*	АЦП при калибровке нуля				*/
+		/* 0x1029 */	{ (uint16_t*)&dev.Config.CalibConcTemper,	TRUE },		/*	Темпер. при калибровке концентрации	*/
+		/* 0x102A */	{ (uint16_t*)&dev.Config.CalibConcADC,		TRUE },		/*	АЦП при калибровке концентрации		*/
 		/* 0x102B */	{ (uint16_t*)&Reserv,						FALSE },		/*		Р Е З Е Р В						*/
 		/* 0x102C */	{ (uint16_t*)&Reserv,						FALSE },		/*		Р Е З Е Р В						*/
 		/* 0x102D */	{ (uint16_t*)&Reserv,						FALSE },		/*		Р Е З Е Р В						*/
@@ -310,16 +312,16 @@ const TVAR reg_x03[] =
 		/* 0x106F */	{ (uint16_t*)&dev.Config.linear[15].Koef,			TRUE },// [15] Коэффициент
 		//------------------------------------------------------------------------------------------------------------------
 		//------------------------------------------------------------------------------------------------------------------
-		/* 0x1070 */	/*		Р Е З Е Р В						*/
-		/* 0x1071 */	/*		Р Е З Е Р В						*/
-		/* 0x1072 */	/*		Р Е З Е Р В						*/
-		/* 0x1073 */	/*		Р Е З Е Р В						*/
-		/* 0x1074 */	/*		Р Е З Е Р В						*/
-		/* 0x1075 */	/*		Р Е З Е Р В						*/
-		/* 0x1076 */	/*		Р Е З Е Р В						*/
-		/* 0x1077 */	/*		Р Е З Е Р В						*/
-		/* 0x1078 */	/*		Р Е З Е Р В						*/
-		/* 0x1079 */	/*		Р Е З Е Р В						*/
+		/* 0x1070 */	{ (uint16_t*)&dev.Config.UnitKoef[0],	TRUE },		/* 		*/
+		/* 0x1071 */	{ (uint16_t*)&dev.Config.UnitKoef[1],	TRUE },		/*		*/
+		/* 0x1072 */	{ (uint16_t*)&dev.Config.UnitKoef[2],	TRUE },		/* 		*/
+		/* 0x1073 */	{ (uint16_t*)&dev.Config.UnitKoef[3],	TRUE },		/*		*/
+		/* 0x1074 */	{ (uint16_t*)&dev.Config.UnitKoef[4],	TRUE },		/* 		*/
+		/* 0x1075 */	{ (uint16_t*)&dev.Config.UnitKoef[5],	TRUE },		/*		*/
+		/* 0x1076 */	{ (uint16_t*)&dev.Config.diskret_1_2,	TRUE },		/* 		*/
+		/* 0x1077 */	{ (uint16_t*)&dev.Config.diskret_3_4,	TRUE },		/*		*/
+		/* 0x1078 */	{ (uint16_t*)&dev.Config.diskret_5_6,	TRUE },		/* 		*/
+		/* 0x1079 */	{ (uint16_t*)&dev.Config.UnitView,		TRUE },		/*		*/
 		/* 0x107A */	/*		Р Е З Е Р В						*/
 		/* 0x107B */	/*		Р Е З Е Р В						*/
 		/* 0x107C */	/*		Р Е З Е Р В						*/
@@ -338,7 +340,7 @@ const TVAR reg_x03[] =
 typedef uint16_t*	tINREG;
 const tINREG reg_x04[]=
 {
-		/* 0x0000 */	(uint16_t*)&dev.RegInput.cod_8216,					/* 8216											*/
+		/* 0x0000 */	(uint16_t*)&dev.RegInput.cod_8225,					/* cod_8225											*/
 		/* 0x0001 */	(uint16_t*)&dev.RegInput.VerSW,						/* Код версии ПО								*/
 		/* 0x0002 */	(uint16_t*)&dev.RegInput.VerSW_Build,				/* Код версии ПО. Build							*/
 		/* 0x0003 */	(uint16_t*)&(HIWORD(dev.Config.Serial)),			/* Заводской номер HI							*/

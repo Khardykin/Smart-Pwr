@@ -84,8 +84,8 @@ void Error_Handler(void);
 #define RDY_ADS1115_Pin LL_GPIO_PIN_4
 #define RDY_ADS1115_GPIO_Port GPIOA
 #define RDY_ADS1115_EXTI_IRQn EXTI4_15_IRQn
-#define HEAT_GPIO_Output_Pin LL_GPIO_PIN_1
-#define HEAT_GPIO_Output_GPIO_Port GPIOB
+#define HEAT_Pin LL_GPIO_PIN_1
+#define HEAT_GPIO_Port GPIOB
 #define DEBUG_USART2_TX_Pin LL_GPIO_PIN_9
 #define DEBUG_USART2_TX_GPIO_Port GPIOA
 #define DEBUG_USART2_RX_Pin LL_GPIO_PIN_10
@@ -111,5 +111,3 @@ void Error_Handler(void);
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

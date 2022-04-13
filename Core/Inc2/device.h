@@ -23,6 +23,15 @@ void dev_init(void);
 void dev_proc(void);
 void heat_proc(void);
 
+#if defined(CONFIG_PI) || defined(CONFIG_EC)
+	#define SET_HEAT_ON 	WRITE_REG(HEAT_GPIO_Port->BSRR, HEAT_Pin)
+	#define SET_HEAT_OFF 	WRITE_REG(HEAT_GPIO_Port->BRR, HEAT_Pin)
+#endif
+#ifdef CONFIG_PI
+	#define SET_TURN_ON 	WRITE_REG(TURN_ON_IR_GPIO_Port->BSRR, TURN_ON_IR_Pin);
+	#define SET_TURN_OFF 	WRITE_REG(TURN_ON_IR_GPIO_Port->BRR, TURN_ON_IR_Pin);
+#endif
+
 extern BOOL f_Time250ms;
 extern BOOL f_Time500ms;
 ///000
@@ -87,7 +96,7 @@ typedef struct{
 	uint16_t LMP_Gain;			/* Настройки LMP ucRLoad & ucGain		*/
 	uint16_t LMP_BiasSign;		/* Настройки LMP ucBias & ucBiasSign 	*/
 	uint16_t LMP_Source;		/* Настройки LMP ucIntZ & ucSource		*/
-	uint16_t LMP_FET;			/* Настройки LMP  ucMode & ucFET		*/
+	uint16_t LMP_Mode;			/* Настройки LMP  ucMode & ucFET		*/
 
 	uint16_t MolarMass; 		/* Молярная масса газа					*/
 	uint16_t ValueHighMeausure;	/* Верхнее значение: измеряемое			*/
@@ -109,6 +118,13 @@ typedef struct{
 		uint16_t Koef;
 	}linear[16];
 
+	uint16_t UnitKoef[6];			/* 0x1070 */
+
+	uint16_t diskret_1_2;			/* 0x1076 */
+	uint16_t diskret_3_4;			/* 0x1077 */
+	uint16_t diskret_5_6;			/* 0x1078 */
+	uint16_t UnitView;				/* 0x1079 */
+
 	uint16_t CalibZeroTemper;
 	uint16_t CalibZeroADC;
 
@@ -123,7 +139,7 @@ typedef struct{
 
 typedef struct{
 
-	uint16_t cod_8216;			/* 0x0000 */	/* 8216											*/
+	uint16_t cod_8225;			/* 0x0000 */	/* cod_8225											*/
 	uint16_t VerSW;				/* 0x0001 */	/* Код версии ПО								*/
 	uint16_t VerSW_Build;		/* 0x0002 */	/* Код версии ПО. Build							*/
 	uint16_t ZavNumHI;			/* 0x0003 */	/* Заводской номер HI							*/

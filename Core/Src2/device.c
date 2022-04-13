@@ -171,7 +171,7 @@ void dev_set_config_default(void)
 	dev.Config.LMP_Gain 	= 0x0105;
 	dev.Config.LMP_BiasSign = 0x0000;
 	dev.Config.LMP_Source	= 0x0001;
-	dev.Config.LMP_FET		= 0x0700;
+	dev.Config.LMP_Mode		= 0x0700;
 #endif
 
 #ifdef CONFIG_PI
@@ -182,7 +182,7 @@ void dev_set_config_default(void)
 	dev.Config.ValueHigh = 10000;
 
 	dev.Config.ScaleKoef = 10;
-	dev.Config.FID = ADS_CONFIG_REG_PGA_1_024V;
+	dev.Config.FID = ADS_CONFIG_REG_PGA_0_256V;
 #endif
 #ifdef CONFIG_FID
 	dev.Config.TypeSensor = (SENSOR_TYPE_FID << 8);
@@ -192,7 +192,7 @@ void dev_set_config_default(void)
 	dev.Config.ValueHigh = 10000;
 
 	dev.Config.ScaleKoef = 10;
-	dev.Config.FID = ADS_CONFIG_REG_PGA_1_024V;
+	dev.Config.FID = ADS_CONFIG_REG_PGA_0_256V;
 #endif
 
 #ifdef CONFIG_MIPEX
@@ -216,14 +216,14 @@ void dev_set_config_default(void)
 	#define INIT_MODE_TIME 60
 #endif
 #if defined(CONFIG_PI) || defined(CONFIG_FID)
-	#define INIT_MODE_TIME 30
+	#define INIT_MODE_TIME 15
 #endif
 
 void dev_init(void){
 
 //	dev_set_config_default();
 
-	dev.RegInput.cod_8216 = 8216;
+	dev.RegInput.cod_8225 = 8225;
 
 	dev.RegInput.VerSW = 0x0101;
 	dev.RegInput.VerSW_Build = 0x0001;
@@ -235,8 +235,6 @@ void dev_init(void){
 
 //==============================================================================
 #ifdef CONFIG_EC
-#define SET_HEAT_ON 	LL_GPIO_SetOutputPin(HEAT_GPIO_Output_GPIO_Port, HEAT_GPIO_Output_Pin)
-#define SET_HEAT_OFF 	LL_GPIO_ResetOutputPin(HEAT_GPIO_Output_GPIO_Port, HEAT_GPIO_Output_Pin)
 
 void heat_proc(void)
 {
@@ -267,8 +265,7 @@ void heat_proc(void)
 }
 #endif
 #ifdef CONFIG_PI
-#define SET_TURN_ON 	WRITE_REG(TURN_ON_IR_GPIO_Port->BSRR, TURN_ON_IR_Pin);
-#define SET_TURN_OFF 	WRITE_REG(TURN_ON_IR_GPIO_Port->BRR, TURN_ON_IR_Pin);
+
 #define HEAT_TIME_PERIOD		(100)
 #define HEAT_TIME_PULSE			(1)
 #define HEAT_TIME_DEC_PERIOD	(INIT_MODE_TIME*1000/HEAT_TIME_PERIOD)
@@ -284,10 +281,10 @@ void heat_proc(void)
 		if(flag_1ms){
 			flag_1ms = 0;
 			if(flagPulse){
-				SET_TURN_ON;
+				SET_HEAT_OFF;
 			}
 			else{
-				SET_TURN_OFF;
+				SET_HEAT_ON;
 			}
 			Counter++;
 			CounterDecPeriod++;
@@ -313,7 +310,7 @@ void heat_proc(void)
 	}
 	else{
 		// Включаем питание на сенсоре
-		SET_TURN_ON;
+		SET_HEAT_OFF;
 	}
 }
 #endif
@@ -488,15 +485,18 @@ void Adc_read_data(void)
 #endif
 
 #ifdef CONFIG_PI
+uint16_t ads0, ads1;
 void Adc_read_data(void)
 {
 	ADC_in_RefVoltage = __LL_ADC_CALC_VREFANALOG_VOLTAGE(ADC_in[1], LL_ADC_RESOLUTION_12B);
 	ADC_in_Celsius = 10 * __LL_ADC_CALC_TEMPERATURE(ADC_in_RefVoltage, ADC_in[2], LL_ADC_RESOLUTION_12B);
 
-	dev.RegInput.ADC_0 = ADS_Read_adc(dev.Config.FID);
+	dev.RegInput.ADC_0 = ADS_Read_adc(ADS_CONFIG_REG_PGA_0_256V);
 	dev.RegInput.Volt_Sens = ADS_Read_volt(dev.RegInput.ADC_0);
 	dev.RegInput.TempSensor = ADC_in_Celsius;
-//#define DEBUG_ADS1115
+//	ads0 = ADS_Read_Diff(ADS_CONFIG_REG_MUX_DIF_0_N, ADS_CONFIG_REG_PGA_0_256V);
+//	ads1 = ADS_Read_Diff(ADS_CONFIG_REG_MUX_DIF_1_N, ADS_CONFIG_REG_PGA_0_256V);
+#define DEBUG_ADS1115
 #ifdef DEBUG_ADS1115
 #ifdef DEBUG_MY
 		d_printf("ADC - %05d Volt - %05d Temp:%d", dev.RegInput.ADC_0, dev.RegInput.Volt_Sens,  dev.RegInput.TempSensor);

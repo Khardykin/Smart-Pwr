@@ -1,6 +1,10 @@
 calculations.c:21:6:CalibGasZero	8	static
 calculations.c:35:6:CalibGasConc	8	static
 calculations.c:52:10:get_koef_temper_conc	40	static
-calculations.c:175:6:SetGasValue	24	static
-calculations.c:230:6:test_temp_korr	8	static
-calculations.c:246:6:SetGasValue_mg_m3	8	static
+calculations.c:181:6:LinearizInit_O2	8	static
+calculations.c:209:6:LinearizInit	8	static
+calculations.c:219:10:LinearizKoef	40	static
+calculations.c:308:6:test_lineariz	8	static
+calculations.c:324:6:SetGasValue	24	static
+calculations.c:408:6:test_temp_korr	8	static
+calculations.c:424:6:SetGasValue_mg_m3	8	static

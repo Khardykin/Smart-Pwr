@@ -119,11 +119,11 @@ void LMP_MemSet(void){
 
 	LMP_Ref = tmp;
 
-	tmp  = 0b00000111 &  HIBYTE(dev.Config.LMP_FET);
+	tmp  = 0b00000111 &  HIBYTE(dev.Config.LMP_Mode);
 
 	if(tmp == 5) tmp = 7;
 
-	tmp |= 0b10000000 & (LOBYTE(dev.Config.LMP_FET) 		<< 7);
+	tmp |= 0b10000000 & (LOBYTE(dev.Config.LMP_Mode) 		<< 7);
 
 	LMP_Mode = tmp;
 
@@ -174,7 +174,7 @@ void LMP_Init(void){
 void LMP_Set_Mode(uint8_t reg){
 
 	LMP_Mode = 0x07 & reg;
-	LMP_Mode |= 0b10000000 & (LOBYTE(dev.Config.LMP_FET) 		<< 7);
+	LMP_Mode |= 0b10000000 & (LOBYTE(dev.Config.LMP_Mode) 		<< 7);
 
 	LMP_write_reg();
 

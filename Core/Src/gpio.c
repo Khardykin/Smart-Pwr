@@ -1,3 +1,4 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    gpio.c
@@ -6,16 +7,16 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
@@ -53,7 +54,7 @@ void MX_GPIO_Init(void)
   LL_GPIO_ResetOutputPin(TURN_ON_IR_GPIO_Port, TURN_ON_IR_Pin);
 
   /**/
-  LL_GPIO_ResetOutputPin(HEAT_GPIO_Output_GPIO_Port, HEAT_GPIO_Output_Pin);
+  LL_GPIO_SetOutputPin(HEAT_GPIO_Port, HEAT_Pin);
 
   /**/
   GPIO_InitStruct.Pin = TURN_ON_IR_Pin;
@@ -64,12 +65,12 @@ void MX_GPIO_Init(void)
   LL_GPIO_Init(TURN_ON_IR_GPIO_Port, &GPIO_InitStruct);
 
   /**/
-  GPIO_InitStruct.Pin = HEAT_GPIO_Output_Pin;
+  GPIO_InitStruct.Pin = HEAT_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(HEAT_GPIO_Output_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_Init(HEAT_GPIO_Port, &GPIO_InitStruct);
 
   /**/
   LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE4);
@@ -96,5 +97,3 @@ void MX_GPIO_Init(void)
 /* USER CODE BEGIN 2 */
 
 /* USER CODE END 2 */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

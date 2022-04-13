@@ -17,12 +17,11 @@
 #include "i2c.h"
 #include "lptim.h"
 #include "usart.h"
-#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "tim.h"
 #include "defines.h"
 //#include "string.h"
 #include "debug.h"
@@ -188,6 +187,9 @@ int main(void)
 #ifdef CONFIG_MIPEX
 	Mipex_Init();
 #endif
+#ifdef CONFIG_PI
+	SET_TURN_ON;
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -345,4 +347,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

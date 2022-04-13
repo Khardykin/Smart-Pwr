@@ -68,7 +68,7 @@ static uint16_t ADS_READ_REG(uint8_t reg)
 	while(!TimeOut_Read_I2C() && !LL_I2C_IsActiveFlag_STOP(ADS_PORT));
 	LL_I2C_ClearFlag_STOP(ADS_PORT);
 
-	return ((byte[0]<<8) + byte[1]);
+	return (((byte[0]<<8) + byte[1]) + 0x8000);
 }
 
 //==============================================================================

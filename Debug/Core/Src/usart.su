@@ -1,2 +1,2 @@
-usart.c:29:6:MX_LPUART1_UART_Init	72	static
+usart.c:29:6:MX_LPUART1_UART_Init	72	static,ignoring_inline_asm
 usart.c:82:6:MX_USART2_UART_Init	96	static

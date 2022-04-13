@@ -18,7 +18,7 @@ void Debug_UART_IRQHandler(void);
 
 //#define PIN_DBG1
 //#define PIN_DBG2
-
+#define DEBUG_MY
 
 #ifdef PIN_DBG1
 
