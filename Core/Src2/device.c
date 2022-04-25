@@ -215,8 +215,10 @@ void dev_set_config_default(void)
 #ifdef CONFIG_MIPEX
 	#define INIT_MODE_TIME 60
 #endif
-#if defined(CONFIG_PI) || defined(CONFIG_FID)
-	#define INIT_MODE_TIME 15
+#if defined(CONFIG_PI)
+	#define INIT_MODE_TIME 5
+#elif defined(CONFIG_FID)
+	#define INIT_MODE_TIME 30
 #endif
 
 void dev_init(void){
@@ -266,17 +268,46 @@ void heat_proc(void)
 #endif
 #ifdef CONFIG_PI
 
-#define HEAT_TIME_PERIOD		(100)
+#define HEAT_TIME_PERIOD		(20)
 #define HEAT_TIME_PULSE			(1)
 #define HEAT_TIME_DEC_PERIOD	(INIT_MODE_TIME*1000/HEAT_TIME_PERIOD)
 uint8_t flag_1ms;
-static uint16_t CountPeriod = 0;
-static uint16_t Counter = 0;
-static uint16_t CounterDecPeriod = 0;
-static uint8_t flagPulse;
+#define WARM_OPTION 			(1)
+#if WARM_OPTION
+	static uint32_t CounterPulseDuty = HEAT_TIME_PERIOD;
+	static uint32_t CounterPulse = HEAT_TIME_PULSE;
+	static uint32_t time_warm_all = (INIT_MODE_TIME*1000);
+	static uint32_t time_warm_dec_period;// Декремент периода
+	static float CounterDec = 0;
 
+	void delay_us(uint32_t us)
+	{
+		TIM2->CNT = 0;
+		while (TIM2->CNT < us);
+	}
+#else
+	static uint16_t CountPeriod = 0;
+	static uint16_t Counter = 0;
+	static uint16_t CounterDecPeriod = 0;
+	static uint8_t flagPulse;
+#endif
 void heat_proc(void)
 {
+
+#if WARM_OPTION
+	if(dev.Status & (1 << STATUS_BIT_MAIN_INIT)){
+		time_warm_dec_period = (uint32_t)((float)time_warm_all/((CounterPulse + CounterPulseDuty)/1000.0));
+		CounterDec = (float)(CounterPulseDuty - CounterPulse)/(float)time_warm_dec_period;
+		for(uint32_t i = 0; i < time_warm_dec_period; i++){
+			SET_HEAT_OFF;
+			delay_us(CounterPulse + (uint32_t)(CounterDec*i + 0.5));
+			SET_HEAT_ON;
+			delay_us(CounterPulseDuty - (uint32_t)(CounterDec*i + 0.5));
+		}
+		// Включаем питание на сенсоре
+		SET_HEAT_OFF;
+	}
+#else
 	if(dev.Status & (1 << STATUS_BIT_MAIN_INIT)){
 		if(flag_1ms){
 			flag_1ms = 0;
@@ -308,6 +339,7 @@ void heat_proc(void)
 			}
 		}
 	}
+#endif
 	else{
 		// Включаем питание на сенсоре
 		SET_HEAT_OFF;

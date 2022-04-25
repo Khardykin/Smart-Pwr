@@ -325,7 +325,8 @@ void SetGasValue(void){
 
 	uint32_t val, val0;
 	int32_t adc;
-	int32_t kc, k;
+	int32_t k;
+	uint32_t kc;
 	uint32_t koef_tc;
 
 //	dev.RegInput.ADC_0 = dev.Config.CalibConcADC;

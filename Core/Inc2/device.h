@@ -16,7 +16,7 @@
 //#define CONFIG_FID	// Конфигурация для MINIPID
 //#define CONFIG_MIPEX	// Конфигурация для MIPIX
 
-
+void delay_ms(uint32_t time);
 void timer_1_128(void);
 
 void dev_init(void);

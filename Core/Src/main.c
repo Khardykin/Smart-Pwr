@@ -135,6 +135,7 @@ int main(void)
   MX_CRC_Init();
   MX_TIM21_Init();
   MX_LPTIM1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
 #ifdef DEBUG_MY
@@ -159,7 +160,10 @@ int main(void)
 #endif
 
 	//  test_temp_korr();
-
+#ifdef CONFIG_PI
+	SET_TURN_ON;
+	LL_mDelay(500);
+#endif
 	modbus_init();
 	///000
 #ifdef CONFIG_EC
@@ -170,6 +174,8 @@ int main(void)
 #if defined(CONFIG_PI) || defined(CONFIG_FID)
 	ADS_Init(dev.Config.FID);
 #endif
+	LL_TIM_EnableCounter(TIM2);
+
 	LL_ADC_Enable(ADC1);
 	LL_ADC_EnableIT_EOC(ADC1);
 
@@ -186,9 +192,6 @@ int main(void)
 	///000
 #ifdef CONFIG_MIPEX
 	Mipex_Init();
-#endif
-#ifdef CONFIG_PI
-	SET_TURN_ON;
 #endif
   /* USER CODE END 2 */
 

@@ -6,5 +6,5 @@ calculations.c:209:6:LinearizInit	8	static
 calculations.c:219:10:LinearizKoef	40	static
 calculations.c:308:6:test_lineariz	8	static
 calculations.c:324:6:SetGasValue	24	static
-calculations.c:408:6:test_temp_korr	8	static
-calculations.c:424:6:SetGasValue_mg_m3	8	static
+calculations.c:409:6:test_temp_korr	8	static
+calculations.c:425:6:SetGasValue_mg_m3	8	static
