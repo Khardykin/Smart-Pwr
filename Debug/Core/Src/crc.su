@@ -1,2 +1,2 @@
-crc.c:28:6:MX_CRC_Init	8	static
-crc.c:54:10:CalcCRC	8	static
+../Core/Src/crc.c:28:6:MX_CRC_Init	8	static
+../Core/Src/crc.c:54:10:CalcCRC	8	static

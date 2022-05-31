@@ -829,29 +829,11 @@ uint32_t CmdFunc6(uint8_t *mas, uint32_t len, uint8_t *out)
 #define BLOCK_MODBUS
 
 #ifdef BLOCK_MODBUS
-	/*
-	if( ( Address >= DEF_reg_x03_UnLock_LO ) && ( Address <= DEF_reg_x03_UnLock_HI ) )
-	{
-		__NOP();
-	} else
-	if( ( Address >= DEF_reg_x03_UnLock2_LO ) && ( Address <= DEF_reg_x03_UnLock2_HI ) )
-	{
-		__NOP();
-	} else
-	if( ( Address >= DEF_reg_x03_UnLock3_LO ) && ( Address <= DEF_reg_x03_UnLock3_HI ) )
-	{
-		__NOP();
-	} else
-	 */
-
 	if(!check_block()){
-
 		out[1] |= 0x80;
 		out[2] = ERROR_Illegal_Slave_Device_Failure;
 		return(3);
-
 	}
-
 #endif
 
 	modbusCMD();

@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (9-2020-q2-update)
+# Toolchain: GNU Tools for STM32 (10.3-2021.10)
 ################################################################################
 
 -include ../makefile.init
@@ -45,6 +45,9 @@ BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ART
 EXECUTABLES += \
 Smart-Pwr.elf \
 
+MAP_FILES += \
+Smart-Pwr.map \
+
 SIZE_OUTPUT += \
 default.size.stdout \
 
@@ -54,9 +57,6 @@ Smart-Pwr.list \
 OBJCOPY_HEX += \
 Smart-Pwr.hex \
 
-OBJCOPY_BIN += \
-Smart-Pwr.bin \
-
 
 # All Target
 all: main-build
@@ -65,7 +65,7 @@ all: main-build
 main-build: Smart-Pwr.elf secondary-outputs
 
 # Tool invocations
-Smart-Pwr.elf: $(OBJS) $(USER_OBJS) D:\ProjectSTM\STM32CubeIDE\workspace\Smart-Pwr\STM32L031G6UX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+Smart-Pwr.elf Smart-Pwr.map: $(OBJS) $(USER_OBJS) D:\ProjectSTM\STM32CubeIDE\workspace\Smart-Pwr\STM32L031G6UX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	arm-none-eabi-gcc -o "Smart-Pwr.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"D:\ProjectSTM\STM32CubeIDE\workspace\Smart-Pwr\STM32L031G6UX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Smart-Pwr.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
@@ -85,17 +85,12 @@ Smart-Pwr.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Smart-Pwr.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Smart-Pwr.bin"
-	@echo 'Finished building: $@'
-	@echo ' '
-
 # Other Targets
 clean:
-	-$(RM) Smart-Pwr.bin Smart-Pwr.elf Smart-Pwr.hex Smart-Pwr.list default.size.stdout
+	-$(RM) Smart-Pwr.elf Smart-Pwr.hex Smart-Pwr.list Smart-Pwr.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
