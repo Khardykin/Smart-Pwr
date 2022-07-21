@@ -6,9 +6,9 @@
 ../Core/Src2/modbus.c:665:6:__CMD_SAVE_WORD	0	static
 ../Core/Src2/modbus.c:691:6:check_block	16	static
 ../Core/Src2/modbus.c:741:6:modbusCMD	16	static
-../Core/Src2/modbus.c:818:10:CmdFunc6	16	static
-../Core/Src2/modbus.c:895:10:CmdFunc8	8	static
-../Core/Src2/modbus.c:902:10:CmdFunc12	16	static
-../Core/Src2/modbus.c:927:10:CmdFunc16	24	static
+../Core/Src2/modbus.c:821:10:CmdFunc6	16	static
+../Core/Src2/modbus.c:898:10:CmdFunc8	8	static
+../Core/Src2/modbus.c:905:10:CmdFunc12	16	static
+../Core/Src2/modbus.c:930:10:CmdFunc16	24	static
 ../Core/Src2/modbus.c:434:10:cmdModbusRTU	16	static
 ../Core/Src2/modbus.c:30:6:mb_proc	16	static,ignoring_inline_asm

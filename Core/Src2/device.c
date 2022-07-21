@@ -18,6 +18,7 @@
 #include "calculations.h"
 #include "msi.h"
 #include "Mipex_command.h"
+#include "FilterMiddle.h"
 
 //stMain_td stMain;
 
@@ -36,10 +37,14 @@ BOOL f_Time500ms = FALSE;
 #endif
 
 ///000
-uint8_t CntTo2min = 0;
-BOOL f_Time2min = TRUE;
+uint16_t CntPeriodFid = 0;
+uint16_t CntReadFid = 0;
+BOOL f_ReadFid = FALSE;
+BOOL f_PeriodFid = FALSE;
 #if defined(CONFIG_PI) || defined(CONFIG_FID)
 	BOOL f_TimeCalibFid = FALSE;
+	BOOL f_TimeCalibFidStart = FALSE;
+	uint16_t CntCalibFid = 0;
 #endif
 
 uint8_t CntToSec = 0;
@@ -82,10 +87,27 @@ void timer_1_128(void)
 					f_Time3s = TRUE;
 				}
 #endif
-				CntTo2min++;
-				if(CntTo2min == 120){// 2 минуты
-					CntTo2min = 0;
-					f_Time2min = TRUE;
+				CntPeriodFid++;
+				if(CntPeriodFid >= ((dev.Config.FID>>8)&0xFF)){// 2 минуты
+					CntPeriodFid = 0;
+					f_PeriodFid = TRUE;
+				}
+				if(f_PeriodFid){
+					CntReadFid++;
+					if(CntReadFid == ((dev.Config.FID&0xFF) - TIMER_CALIB_FID)){
+						f_ReadFid = TRUE;
+					}
+					if(CntReadFid >= (dev.Config.FID&0xFF)){
+						CntReadFid = 0;
+						f_PeriodFid = FALSE;
+					}
+				}
+				if(CntCalibFid){
+					CntCalibFid --;
+					if(CntCalibFid == 0){
+						// Режим непрерывной работы для ФИД во время калибровки включить
+						f_TimeCalibFidStart = TRUE;
+					}
 				}
 			}
 
@@ -192,7 +214,8 @@ void dev_set_config_default(void)
 	dev.Config.ValueHigh = 10000;
 
 	dev.Config.ScaleKoef = 10;
-	dev.Config.FID = ADS_CONFIG_REG_PGA_0_256V;
+	dev.Config.ScaleADC = ADS_CONFIG_REG_PGA_0_256V;
+	dev.Config.FID = 0x780A;
 #endif
 
 #ifdef CONFIG_MIPEX
@@ -223,6 +246,7 @@ void dev_set_config_default(void)
 
 void dev_init(void){
 
+	adcFilterMiddleInit(&stFilterSensor);
 //	dev_set_config_default();
 
 	dev.RegInput.cod_8225 = 8225;
@@ -233,6 +257,8 @@ void dev_init(void){
 	dev.Status = (1 << STATUS_BIT_MAIN_INIT);
 
 	dev.RegInput.TimeToOffHeat = INIT_MODE_TIME;
+
+//	dev.Config.FID = 0x1E0A;
 }
 
 //==============================================================================
@@ -478,40 +504,70 @@ void Adc_read_data(void)
 #endif
 
 #ifdef CONFIG_FID
+#define ADС_POINTS_DEFAULT	(14)
+static uint32_t ADC_result = 0;
+static uint32_t count_ADC_result = 0;
 void Adc_read_data(void)
 {
 	ADC_in_RefVoltage = __LL_ADC_CALC_VREFANALOG_VOLTAGE(ADC_in[1], LL_ADC_RESOLUTION_12B);
 	ADC_in_Celsius = 10 * __LL_ADC_CALC_TEMPERATURE(ADC_in_RefVoltage, ADC_in[2], LL_ADC_RESOLUTION_12B);
-
-	// 2 минуты
-	if(f_Time2min || f_TimeCalibFid){
-		f_Time2min = FALSE;
+	//--------------------------------------------------------------------
+	if(!TESTBIT(dev.Status, STATUS_BIT_MAIN_MODE))
+	{ // Сервисный режим
+		f_TimeCalibFid = FALSE;
+		f_TimeCalibFidStart = FALSE;
+	}
+	//--------------------------------------------------------------------
+	if(f_PeriodFid == TRUE || (f_TimeCalibFid == TRUE)){
 		// Включаем питание на сенсоре
 		LL_GPIO_SetOutputPin(TURN_ON_IR_GPIO_Port, TURN_ON_IR_Pin);
 		dev.Status |= (1 << STATUS_BIT_FID_PWR);
-
-		dev.RegInput.ADC_0 = ADS_Read_adc(dev.Config.FID);
+	}
+	//--------------------------------------------------------------------
+	// Режим чтения концентрации
+	if((f_ReadFid == TRUE) || (f_TimeCalibFidStart == TRUE)){
+		ADC_result = ADS_Read_adc(dev.Config.ScaleADC);
+		if(count_ADC_result < ADС_POINTS_DEFAULT){
+			count_ADC_result ++;
+		}
+		ADC_result = (adcFilterMiddleRun(&stFilterSensor, (ADC_result<<1))+1)>>1;
 		dev.RegInput.Volt_Sens = ADS_Read_volt(dev.RegInput.ADC_0);
 		dev.RegInput.TempSensor = ADC_in_Celsius;
-#define DEBUG_ADS1115
+		//--------------------------------------------------------------------
+		// Нахождение среднего
+		if(count_ADC_result >= ADС_POINTS_DEFAULT){
+			dev.RegInput.ADC_0 = ADC_result;
+		}
+		//--------------------------------------------------------------------
+//#define DEBUG_ADS1115
 #ifdef DEBUG_ADS1115
 #ifdef DEBUG_MY
 		d_printf("ADC - %05d Volt - %05d Temp:%d", dev.RegInput.ADC_0, dev.RegInput.Volt_Sens,  dev.RegInput.TempSensor);
 		d_printf("\n\r");
 #endif
 #endif
-		if(!f_TimeCalibFid){
+	}
+	//--------------------------------------------------------------------
+	SetGasValue();
+	//--------------------------------------------------------------------
+	// Перевод в единицу измерения НКПР
+	if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_vol)){
+		dev.RegInput.dwValue_mg_m3 = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
+	}
+	//--------------------------------------------------------------------
+	if(f_PeriodFid == FALSE){
+		f_ReadFid = FALSE;
+		if(f_TimeCalibFid == FALSE){
+			f_TimeCalibFidStart = FALSE;
 			// Выключаем питание на сенсоре
 			LL_GPIO_ResetOutputPin(TURN_ON_IR_GPIO_Port, TURN_ON_IR_Pin);
 			dev.Status &=~ (1 << STATUS_BIT_FID_PWR);
-		}
-		SetGasValue();
-		//--------------------------------------------------------------------
-		// Перевод в единицу измерения НКПР
-		if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_vol)){
-			dev.RegInput.dwValue_mg_m3 = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
+			//--------------------------------------------------------------------
+			count_ADC_result = 0;
+			//--------------------------------------------------------------------
 		}
 	}
+	//--------------------------------------------------------------------
 
 }
 #endif

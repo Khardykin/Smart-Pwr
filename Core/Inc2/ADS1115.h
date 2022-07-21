@@ -13,6 +13,8 @@
 #define ADS_PORT 		I2C1
 #define ADS_I2C_ADDRESS (0x48 << 1)
 
+#define ADS_POINTS_DEFAULT	(8)
+
 #define ADS_CONVERSION_REG                     	(0x00)
 #define ADS_CONFIG_REG                         	(0x01)
 #define ADS_LO_TH_REG                          	(0x10)

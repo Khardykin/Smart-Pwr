@@ -12,8 +12,8 @@
 #include "defines.h"
 ///000
 //#define CONFIG_EC		// Конфигурация для электрохимии
-#define CONFIG_PI		// Конфигурация для термокатализа
-//#define CONFIG_FID	// Конфигурация для MINIPID
+//#define CONFIG_PI		// Конфигурация для термокатализа
+#define CONFIG_FID	// Конфигурация для MINIPID
 //#define CONFIG_MIPEX	// Конфигурация для MIPIX
 
 void delay_ms(uint32_t time);
@@ -39,9 +39,15 @@ extern BOOL f_Time500ms;
 	extern BOOL f_Time3s;
 #endif
 ///000
-extern BOOL f_Time2min;
+extern uint16_t CntPeriodFid;
+extern uint16_t CntReadFid;
+extern BOOL f_ReadFid;
+extern BOOL f_PeriodFid;
 #ifdef CONFIG_FID
+	#define TIMER_CALIB_FID 	(5)
 	extern BOOL f_TimeCalibFid;
+	extern BOOL f_TimeCalibFidStart;
+	extern uint16_t CntCalibFid;
 #endif
 
 #ifdef CONFIG_PI

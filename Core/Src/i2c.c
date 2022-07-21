@@ -63,6 +63,7 @@ void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 1 */
 
   /* USER CODE END I2C1_Init 1 */
+
   /** I2C Initialization
   */
   LL_I2C_EnableAutoEndMode(I2C1);

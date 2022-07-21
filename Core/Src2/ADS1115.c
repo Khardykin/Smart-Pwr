@@ -67,8 +67,12 @@ static uint16_t ADS_READ_REG(uint8_t reg)
 	TimeOut_Set_I2C(I2C_TO);
 	while(!TimeOut_Read_I2C() && !LL_I2C_IsActiveFlag_STOP(ADS_PORT));
 	LL_I2C_ClearFlag_STOP(ADS_PORT);
-
+#ifdef CONFIG_FID
+	return ((((byte[0]<<8) + byte[1]) + 0x8000));
+#else
 	return (((byte[0]<<8) + byte[1]) + 0x8000);
+#endif
+
 }
 
 //==============================================================================
@@ -117,9 +121,16 @@ uint16_t ADS_Read_Diff(uint16_t data, uint16_t gain)
 }
 //==============================================================================
 // Чтение значения ацп
+static uint32_t ADS_Result;
 uint16_t ADS_Read_adc(uint16_t gain)
 {
-	return ADS_Read_Diff(ADS_CONFIG_REG_MUX_DIF_0_1, gain);
+	uint32_t avg = 0;
+	ADS_Result = 0;
+	for(uint16_t i = 0; i < ADS_POINTS_DEFAULT; i++){
+		ADS_Result += ADS_Read_Diff(ADS_CONFIG_REG_MUX_DIF_0_1, gain);
+	}
+	avg = ((ADS_Result<<1)/ADS_POINTS_DEFAULT + 1)>>1;
+	return avg;
 }
 //==============================================================================
 // Преобразование ADC в mV

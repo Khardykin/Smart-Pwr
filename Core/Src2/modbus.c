@@ -787,14 +787,17 @@ void modbusCMD(void){
 	case DEF_CODE_CALIB_FID:
 		// Режим непрерывной работы для ФИД во время калибровки включить
 		f_TimeCalibFid = TRUE;
+		if(f_ReadFid == TRUE){
+			f_TimeCalibFidStart = TRUE;
+		}
+		else{
+			CntCalibFid = ((dev.Config.FID&0xFF) - TIMER_CALIB_FID) - CntReadFid;
+		}
 		break;
 		///000
 	case DEF_CODE_NULL:
 		// Режим непрерывной работы для ФИД во время калибровки выключить
 		f_TimeCalibFid = FALSE;
-		// Выключаем питание на сенсоре
-		LL_GPIO_ResetOutputPin(TURN_ON_IR_GPIO_Port, TURN_ON_IR_Pin);
-		dev.Status &=~ (1 << STATUS_BIT_FID_PWR);
 		break;
 #endif
 		///000

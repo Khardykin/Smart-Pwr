@@ -22,6 +22,9 @@ void CalibGasZero(void){
 
 	uint32_t tmp;
 
+	dev.Config.CalibConcTemper += (int16_t)(dev.Config.CalibZeroTemper - dev.RegInput.TempSensor);
+	dev.Config.CalibConcADC += (int16_t)(dev.Config.CalibZeroADC - dev.RegInput.ADC_0);
+
 	dev.Config.CalibZeroTemper = dev.RegInput.TempSensor;
 	dev.Config.CalibZeroADC = dev.RegInput.ADC_0;
 
@@ -43,6 +46,13 @@ void CalibGasConc(void){
 	tmp |= dev.RegInput.ADC_TK;
 
 	ArhivStoreNote(ARCHIVE_SET_CALIB_CONC,tmp);
+
+//	if((dev.Config.CalibConcADC - dev.Config.CalibZeroADC) > 0){
+//		k = dev.Config.ValueCalib  * 10000/ (dev.Config.CalibConcADC - dev.Config.CalibZeroADC);
+//	}
+//	else{
+//		k = 10000;
+//	}
 }
 
 //==============================================================================
@@ -64,7 +74,7 @@ uint32_t get_koef_temper_conc(int16_t temperat){
 	BOOL find_temper = FALSE;
 	BOOL find_null = FALSE;
 
-	int16_t dt, temper_1, temper_2;
+	int16_t dt, dt2, temper_1, temper_2;
 
 	int32_t dk;
 
@@ -122,10 +132,19 @@ uint32_t get_koef_temper_conc(int16_t temperat){
 
 		dt = temperat - temper_1;
 
-		dk = (koef_2 - koef_1) * dt * K_MUL / (temper_2 - temper_1);
+		dt2 = temper_2 - temper_1;
+
+		if(dt2 != 0){
+			dk = (koef_2 - koef_1) * dt * K_MUL / dt2;
+		}else{
+			dk = 0;
+		}
 
 		temper_koef =  (koef_1 * K_MUL) + dk;
 
+	}else if(find_null){
+
+		temper_koef = koef_1 * K_MUL;
 	}else if(temperat > temper_2){
 
 		temper_koef = koef_2 * K_MUL;
@@ -225,7 +244,7 @@ uint16_t LinearizKoef(uint32_t value){
 	BOOL find_val = FALSE;
 	BOOL find_null = FALSE;
 
-	int16_t dt, val_1, val_2;
+	int16_t dt, dt2, val_1, val_2;
 	int32_t dk;
 	uint32_t koef_1, koef_2;
 
@@ -284,10 +303,20 @@ uint16_t LinearizKoef(uint32_t value){
 //		dk = (koef_2 - koef_1) * dt * K_MUL / (val_2 - val_1);
 
 		dk = (koef_2 - koef_1) * dt * K_MUL;
-		dk /= (val_2 - val_1);
+
+		dt2 = val_2 - val_1;
+
+		if(dt2 != 0){
+			dk /= dt2;
+		}else{
+			dk = 0;
+		}
 
 		linear_koef =  (koef_1 * K_MUL) + dk;
 
+	}else if(find_null){
+
+		linear_koef = koef_1 * K_MUL;
 	}else if(value > val_2){
 
 		linear_koef = koef_2 * K_MUL;
@@ -309,11 +338,11 @@ void test_lineariz(void){
 
 	int32_t koef;
 
-	for(int16_t val = 0; val <= 300; val++){
+	for(int16_t val = 0; val <= 400; val++){
 
 		koef = LinearizKoef(val);
 		d_printf("\n\r%03d %04d", val, koef);
-		LL_mDelay(100);
+		LL_mDelay(20);
 
 	}
 
@@ -323,32 +352,26 @@ void test_lineariz(void){
 
 void SetGasValue(void){
 
-	uint32_t val, val0;
-	int32_t adc;
-	int32_t k;
-	uint32_t kc;
+	int32_t val, val0;
+	uint32_t adc;
+	uint32_t kc, k;
+	//uint32_t t_shift_c, t_shift;
 	uint32_t koef_tc;
 
 //	dev.RegInput.ADC_0 = dev.Config.CalibConcADC;
 //	dev.RegInput.TempSensor = dev.Config.CalibConcTemper;
-#if 1
-	adc = (int16_t)(dev.RegInput.ADC_0 - dev.Config.CalibZeroADC);
-#else
+
 	if(dev.RegInput.ADC_0 > dev.Config.CalibZeroADC)
-		adc = (int16_t)(dev.RegInput.ADC_0 - dev.Config.CalibZeroADC);
+		adc = dev.RegInput.ADC_0 - dev.Config.CalibZeroADC;
 	else
 		adc = 0;
-#endif
+	  
 
-	if((dev.Config.CalibConcADC - dev.Config.CalibZeroADC) != 0){
-		k = (int16_t)(dev.Config.ValueCalib * 10000) / (int16_t)(dev.Config.CalibConcADC - dev.Config.CalibZeroADC);
+	if((dev.Config.CalibConcADC - dev.Config.CalibZeroADC) > 0){
+		k = dev.Config.ValueCalib  * 10000/ (dev.Config.CalibConcADC - dev.Config.CalibZeroADC);
 	}
 	else{
 		k = 10000;
-	}
-
-	if(!(((adc < 0) && (k < 0)) || ((adc > 0) && (k > 0)))){
-		adc = 0;
 	}
 
 	val = adc*k;
@@ -360,26 +383,38 @@ void SetGasValue(void){
 	kc = get_koef_temper_conc(dev.Config.CalibConcTemper);
 	koef_tc = get_koef_temper_conc(dev.RegInput.TempSensor);
 
+	//t_shift_c = get_temp_zero_shift(dev.Config.CalibZeroTemper);
+	//t_shift   = get_temp_zero_shift(dev.RegInput.TempSensor);
+
 	val *= kc;
 
 	val0 = val;
 	val0 += 500;
 	val0 /= 1000;
-	dev.RegInput.Value_0 = val0;
+
+	//val0 += t_shift_c;
+
+	dev.RegInput.Value_0 = (val0 >= 0)? val0: 0;
 
 	val += (koef_tc >> 1);
 	val /= koef_tc;
 
+	//val += t_shift_c;
+	//val -= t_shift;
+
+	//val = (val > 0)? val: 0;
+
 	uint32_t lin_val;
 	uint16_t koef_lin;
 
-	koef_lin = LinearizKoef(val);;
+	koef_lin = LinearizKoef(val);
+
+	//koef_lin = 1000; // Линеаризация отключена
 
 	lin_val = val * koef_lin;
 	lin_val = (lin_val + 500) / 1000;
 
 	dev.RegInput.Value = lin_val;
-
 
 	val = 1000 * adc;
 	val += (koef_tc >> 1);
@@ -403,7 +438,6 @@ void SetGasValue(void){
 		arh.ValueMin = dev.RegInput.Value;
 
 }
-
 //==============================================================================
 
 void test_temp_korr(void){
@@ -417,7 +451,6 @@ void test_temp_korr(void){
 		LL_mDelay(10);
 
 	}
-
 }
 
 //==============================================================================

@@ -18,6 +18,7 @@
 "./Core/Src1/lmp91000.o"
 "./Core/Src1/modbus_lpuart.o"
 "./Core/Src2/ADS1115.o"
+"./Core/Src2/FilterMiddle.o"
 "./Core/Src2/Mipex_command.o"
 "./Core/Src2/device.o"
 "./Core/Src2/modbus.o"

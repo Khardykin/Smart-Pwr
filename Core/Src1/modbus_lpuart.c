@@ -57,19 +57,16 @@ void Modbus_TXEmpty_Callback(void);
 void Modbus_LPUART_IRQHandler(void){
 
 	if(LL_LPUART_IsEnabledIT_RXNE(MBS_LPUART) && LL_LPUART_IsActiveFlag_RXNE(MBS_LPUART)){
-
 		Modbus_RXNEmpty_Callback();
 	}
 
 	if(LL_LPUART_IsEnabledIT_TXE(MBS_LPUART) && LL_LPUART_IsActiveFlag_TXE(MBS_LPUART)){
-
 		Modbus_TXEmpty_Callback();
 	}
 
 
 
 	if(LL_LPUART_IsEnabledIT_TC(MBS_LPUART) && LL_LPUART_IsActiveFlag_TC(MBS_LPUART)){
-
 		LL_USART_ClearFlag_TC(MBS_LPUART);
 		LL_USART_DisableIT_TC(MBS_LPUART);
 		LL_USART_EnableDirectionRx(MBS_LPUART);

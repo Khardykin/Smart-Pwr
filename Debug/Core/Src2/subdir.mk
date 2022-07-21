@@ -6,6 +6,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Core/Src2/ADS1115.c \
+../Core/Src2/FilterMiddle.c \
 ../Core/Src2/Mipex_command.c \
 ../Core/Src2/device.c \
 ../Core/Src2/modbus.c \
@@ -13,6 +14,7 @@ C_SRCS += \
 
 OBJS += \
 ./Core/Src2/ADS1115.o \
+./Core/Src2/FilterMiddle.o \
 ./Core/Src2/Mipex_command.o \
 ./Core/Src2/device.o \
 ./Core/Src2/modbus.o \
@@ -20,6 +22,7 @@ OBJS += \
 
 C_DEPS += \
 ./Core/Src2/ADS1115.d \
+./Core/Src2/FilterMiddle.d \
 ./Core/Src2/Mipex_command.d \
 ./Core/Src2/device.d \
 ./Core/Src2/modbus.d \
@@ -33,7 +36,7 @@ Core/Src2/%.o Core/Src2/%.su: ../Core/Src2/%.c Core/Src2/subdir.mk
 clean: clean-Core-2f-Src2
 
 clean-Core-2f-Src2:
-	-$(RM) ./Core/Src2/ADS1115.d ./Core/Src2/ADS1115.o ./Core/Src2/ADS1115.su ./Core/Src2/Mipex_command.d ./Core/Src2/Mipex_command.o ./Core/Src2/Mipex_command.su ./Core/Src2/device.d ./Core/Src2/device.o ./Core/Src2/device.su ./Core/Src2/modbus.d ./Core/Src2/modbus.o ./Core/Src2/modbus.su ./Core/Src2/msi.d ./Core/Src2/msi.o ./Core/Src2/msi.su
+	-$(RM) ./Core/Src2/ADS1115.d ./Core/Src2/ADS1115.o ./Core/Src2/ADS1115.su ./Core/Src2/FilterMiddle.d ./Core/Src2/FilterMiddle.o ./Core/Src2/FilterMiddle.su ./Core/Src2/Mipex_command.d ./Core/Src2/Mipex_command.o ./Core/Src2/Mipex_command.su ./Core/Src2/device.d ./Core/Src2/device.o ./Core/Src2/device.su ./Core/Src2/modbus.d ./Core/Src2/modbus.o ./Core/Src2/modbus.su ./Core/Src2/msi.d ./Core/Src2/msi.o ./Core/Src2/msi.su
 
 .PHONY: clean-Core-2f-Src2
 

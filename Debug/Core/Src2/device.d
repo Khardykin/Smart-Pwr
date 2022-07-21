@@ -31,7 +31,8 @@ Core/Src2/device.o: ../Core/Src2/device.c ../Core/Inc/main.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/modbus.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/calculations.h \
  D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/msi.h \
- D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/Mipex_command.h
+ D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/Mipex_command.h \
+ D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/FilterMiddle.h
 ../Core/Inc/main.h:
 C:/Users/Dmitriy/STM32Cube/Repository/STM32Cube_FW_L0_V1.12.1/Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_ll_adc.h:
 C:/Users/Dmitriy/STM32Cube/Repository/STM32Cube_FW_L0_V1.12.1/Drivers/CMSIS/Device/ST/STM32L0xx/Include/stm32l0xx.h:
@@ -66,3 +67,4 @@ D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/modbus.h:
 D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc1/calculations.h:
 D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/msi.h:
 D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/Mipex_command.h:
+D:/ProjectSTM/STM32CubeIDE/workspace/Smart-Pwr/Core/Inc2/FilterMiddle.h:

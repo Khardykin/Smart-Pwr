@@ -1,5 +1,5 @@
 ../Core/Src1/modbus_lpuart.c:34:6:modbus_init	8	static,ignoring_inline_asm
 ../Core/Src1/modbus_lpuart.c:44:6:Modbus_TO_timer	0	static
-../Core/Src1/modbus_lpuart.c:85:6:Modbus_RXNEmpty_Callback	0	static
-../Core/Src1/modbus_lpuart.c:103:6:Modbus_TXEmpty_Callback	8	static,ignoring_inline_asm
+../Core/Src1/modbus_lpuart.c:82:6:Modbus_RXNEmpty_Callback	0	static
+../Core/Src1/modbus_lpuart.c:100:6:Modbus_TXEmpty_Callback	8	static,ignoring_inline_asm
 ../Core/Src1/modbus_lpuart.c:57:6:Modbus_LPUART_IRQHandler	8	static,ignoring_inline_asm
