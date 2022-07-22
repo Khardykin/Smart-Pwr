@@ -226,7 +226,13 @@ int main(void)
 #endif
 #endif
 
+#ifdef CONFIG_PI
+			if(!(dev.Status & (1 << STATUS_BIT_MAIN_INIT))){
+				LL_ADC_REG_StartConversion(ADC1);
+			}
+#else
 			LL_ADC_REG_StartConversion(ADC1);
+#endif
 
 		}
 

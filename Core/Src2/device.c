@@ -26,7 +26,7 @@ dev_td dev;
 
 uint8_t CntTo250ms;
 BOOL f_Time250ms = FALSE;
-
+//BOOL WarmPeriod250_f = 0;
 uint8_t CntTo500ms;
 BOOL f_Time500ms = FALSE;
 
@@ -68,7 +68,7 @@ void timer_1_128(void)
 		CntTo250ms++;
 
 	}else{
-
+//		WarmPeriod250_f = TRUE;
 		f_Time250ms = TRUE;
 		CntTo250ms = 0;
 
@@ -206,7 +206,7 @@ void dev_set_config_default(void)
 	dev.Config.ValueHigh = 10000;
 
 	dev.Config.ScaleKoef = 10;
-	dev.Config.FID = ADS_CONFIG_REG_PGA_0_256V;
+	dev.Config.ScaleADC = ADS_CONFIG_REG_PGA_0_256V;
 #endif
 #ifdef CONFIG_FID
 	dev.Config.TypeSensor = (SENSOR_TYPE_FID << 8);
@@ -241,7 +241,7 @@ void dev_set_config_default(void)
 	#define INIT_MODE_TIME 60
 #endif
 #if defined(CONFIG_PI)
-	#define INIT_MODE_TIME 5
+	#define INIT_MODE_TIME 40
 #elif defined(CONFIG_FID)
 	#define INIT_MODE_TIME 30
 #endif
@@ -298,12 +298,12 @@ void heat_proc(void)
 
 #define HEAT_TIME_PERIOD		(20)
 #define HEAT_TIME_PULSE			(1)
-#define HEAT_TIME_DEC_PERIOD	(INIT_MODE_TIME*1000/HEAT_TIME_PERIOD)
+#define HEAT_TIME_DEC_PERIOD	(((INIT_MODE_TIME-1)/2)*1000/HEAT_TIME_PERIOD)
 uint8_t flag_1ms;
-#define WARM_OPTION 			(1)
+#define WARM_OPTION 			(0)
 #if WARM_OPTION
-	static uint32_t CounterPulseDuty = HEAT_TIME_PERIOD;
-	static uint32_t CounterPulse = HEAT_TIME_PULSE;
+	uint32_t CounterPulseDuty = HEAT_TIME_PERIOD;
+	uint32_t CounterPulse = HEAT_TIME_PULSE;
 	static uint32_t time_warm_all = (INIT_MODE_TIME*1000);
 	static uint32_t time_warm_dec_period;// Декремент периода
 	static float CounterDec = 0;
@@ -315,7 +315,7 @@ uint8_t flag_1ms;
 	}
 #else
 	static uint16_t CountPeriod = 0;
-	static uint16_t Counter = 0;
+	static uint16_t Counter = HEAT_TIME_PULSE;
 	static uint16_t CounterDecPeriod = 0;
 	static uint8_t flagPulse;
 #endif
@@ -337,32 +337,36 @@ void heat_proc(void)
 	}
 #else
 	if(dev.Status & (1 << STATUS_BIT_MAIN_INIT)){
-		if(flag_1ms){
-			flag_1ms = 0;
-			if(flagPulse){
-				SET_HEAT_OFF;
-			}
-			else{
-				SET_HEAT_ON;
-			}
-			Counter++;
-			CounterDecPeriod++;
-			if(CounterDecPeriod >= HEAT_TIME_DEC_PERIOD){
-				if(CountPeriod < HEAT_TIME_PERIOD){
-					CountPeriod++;
+		if((CntSec >= INIT_MODE_TIME)/2){
+			if(flag_1ms){
+				flag_1ms = 0;
+				if(flagPulse){
+					SET_HEAT_OFF;
 				}
-				CounterDecPeriod = 0;
-			}
-			if(flagPulse){
-				if(Counter >= HEAT_TIME_PULSE){
-					Counter = 0;
-					flagPulse = 0;
+				else{
+					SET_HEAT_ON;
 				}
-			}
-			else{
-				if((Counter + CountPeriod) >= HEAT_TIME_PERIOD){
-					Counter = 0;
-					flagPulse = 1;
+				Counter++;
+				CounterDecPeriod++;
+//				if(WarmPeriod250_f == TRUE){
+//					WarmPeriod250_f = FALSE;
+				if(CounterDecPeriod >= HEAT_TIME_DEC_PERIOD){
+					if(CountPeriod < HEAT_TIME_PERIOD){
+						CountPeriod++;
+					}
+					CounterDecPeriod = 0;
+				}
+				if(flagPulse){
+					if(Counter >= CountPeriod){
+						Counter = 0;
+						flagPulse = 0;
+					}
+				}
+				else{
+					if((Counter + CountPeriod) >= HEAT_TIME_PERIOD){
+						Counter = 0;
+						flagPulse = 1;
+					}
 				}
 			}
 		}
@@ -373,6 +377,7 @@ void heat_proc(void)
 		SET_HEAT_OFF;
 	}
 }
+
 #endif
 //==============================================================================
 void dev_proc(void)
@@ -581,7 +586,7 @@ void Adc_read_data(void)
 	ADC_in_RefVoltage = __LL_ADC_CALC_VREFANALOG_VOLTAGE(ADC_in[1], LL_ADC_RESOLUTION_12B);
 	ADC_in_Celsius = 10 * __LL_ADC_CALC_TEMPERATURE(ADC_in_RefVoltage, ADC_in[2], LL_ADC_RESOLUTION_12B);
 
-	dev.RegInput.ADC_0 = ADS_Read_adc(ADS_CONFIG_REG_PGA_0_256V);
+	dev.RegInput.ADC_0 = ADS_Read_adc(dev.Config.ScaleADC);
 	dev.RegInput.Volt_Sens = ADS_Read_volt(dev.RegInput.ADC_0);
 	dev.RegInput.TempSensor = ADC_in_Celsius;
 //	ads0 = ADS_Read_Diff(ADS_CONFIG_REG_MUX_DIF_0_N, ADS_CONFIG_REG_PGA_0_256V);

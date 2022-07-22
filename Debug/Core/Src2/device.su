@@ -4,8 +4,7 @@
 ../Core/Src2/device.c:129:6:serviceTimerProc	8	static
 ../Core/Src2/device.c:179:6:dev_set_config_default	0	static
 ../Core/Src2/device.c:249:6:dev_init	8	static
-../Core/Src2/device.c:311:7:delay_us	0	static
-../Core/Src2/device.c:322:6:heat_proc	24	static
-../Core/Src2/device.c:378:6:dev_proc	8	static
-../Core/Src2/device.c:415:6:Adc_Eoc_Callback	0	static
-../Core/Src2/device.c:579:6:Adc_read_data	16	static
+../Core/Src2/device.c:322:6:heat_proc	0	static
+../Core/Src2/device.c:383:6:dev_proc	8	static
+../Core/Src2/device.c:420:6:Adc_Eoc_Callback	0	static
+../Core/Src2/device.c:584:6:Adc_read_data	16	static

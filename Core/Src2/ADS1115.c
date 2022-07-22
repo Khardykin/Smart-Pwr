@@ -69,8 +69,9 @@ static uint16_t ADS_READ_REG(uint8_t reg)
 	LL_I2C_ClearFlag_STOP(ADS_PORT);
 #ifdef CONFIG_FID
 	return ((((byte[0]<<8) + byte[1]) + 0x8000));
-#else
-	return (((byte[0]<<8) + byte[1]) + 0x8000);
+#endif
+#ifdef CONFIG_PI
+	return ~(((byte[0]<<8) + byte[1]) + 0x8000);
 #endif
 
 }
