@@ -92,6 +92,7 @@ void timer_1_128(void)
 					CntPeriodFid = 0;
 					f_PeriodFid = TRUE;
 				}
+#ifdef CONFIG_FID
 				if(f_PeriodFid){
 					CntReadFid++;
 					if(CntReadFid == ((dev.Config.FID&0xFF) - TIMER_CALIB_FID)){
@@ -109,6 +110,7 @@ void timer_1_128(void)
 						f_TimeCalibFidStart = TRUE;
 					}
 				}
+#endif
 			}
 
 		}
@@ -548,13 +550,6 @@ void Adc_read_data(void)
 #endif
 	}
 	//--------------------------------------------------------------------
-	SetGasValue();
-	//--------------------------------------------------------------------
-	// Перевод в единицу измерения НКПР
-	if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_vol)){
-		dev.RegInput.dwValue_mg_m3 = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
-	}
-	//--------------------------------------------------------------------
 	if(f_PeriodFid == FALSE){
 		f_ReadFid = FALSE;
 		if(f_TimeCalibFid == FALSE){
@@ -566,6 +561,13 @@ void Adc_read_data(void)
 			count_ADC_result = 0;
 			//--------------------------------------------------------------------
 		}
+	}
+	//--------------------------------------------------------------------
+	SetGasValue();
+	//--------------------------------------------------------------------
+	// Перевод в единицу измерения НКПР
+	if(dev.Config.Unit & (1 << CFG_UNIT_VALUE_vol)){
+		dev.RegInput.dwValue_mg_m3 = (dev.RegInput.Value*dev.Config.ScaleKoef)/10;
 	}
 	//--------------------------------------------------------------------
 

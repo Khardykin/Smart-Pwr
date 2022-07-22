@@ -12,8 +12,8 @@
 #include "defines.h"
 ///000
 //#define CONFIG_EC		// Конфигурация для электрохимии
-//#define CONFIG_PI		// Конфигурация для термокатализа
-#define CONFIG_FID	// Конфигурация для MINIPID
+#define CONFIG_PI		// Конфигурация для термокатализа
+//#define CONFIG_FID	// Конфигурация для MINIPID
 //#define CONFIG_MIPEX	// Конфигурация для MIPIX
 
 void delay_ms(uint32_t time);
